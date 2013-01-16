@@ -100,7 +100,7 @@ module Export
           xml.delivery true
           xml.vendor product.brand.name if product.brand
           xml.vendorCode product.sku
-          xml.model product.name
+          xml.model "#{product.name} #{'(' + I18n.t("for_#{GENDER[product.gender].to_s}") + ')' if product.gender.present?}".strip
           xml.description strip_tags(product.description) if product.description
           xml.country_of_origin product.country.name if product.country
           variant.option_values.each do |ov|
