@@ -59,8 +59,8 @@ module Export
             }
 
             xml.offers { # список товаров
-              products = Product.in_taxon(@preferred_category).active.not_gifts.master_price_gte(0.001)
-              products = products.uniq.select { |p| p.has_stock? && p.cat.export_to_yandex_market && p.export_to_yandex_market }
+              products = Product.in_yandex_market_categories.active.not_gifts.master_price_gte(0.001)
+              products = products.uniq.select { |p| p.has_stock? && p.yandex_market_category.export_to_yandex_market && p.export_to_yandex_market }
               products.each do |product|
                 offer_vendor_model(xml, product) 
               end
@@ -93,7 +93,7 @@ module Export
           xml.price variant.price
           xml.currencyId @currencies.first.first
           xml.categoryId product.cat.id
-          xml.market_category product.market_category if product.market_category && product.market_category.present?
+          xml.market_category product.market_category if product.market_category.present?
           product.images.each do |image|
             xml.picture image_url(image)
           end
