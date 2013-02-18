@@ -92,7 +92,7 @@ module Export
           xml.url "http://#{@host}/id/#{product.id}#{@utms}"
           xml.price variant.price
           xml.currencyId @currencies.first.first
-          xml.categoryId product.cat.id
+          xml.categoryId product.yandex_market_category_id
           xml.market_category product.market_category if product.market_category.present?
           product.images.each do |image|
             xml.picture image_url(image)
