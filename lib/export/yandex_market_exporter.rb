@@ -88,6 +88,12 @@ module Export
         opt[:id] = count > 1 ? variant.id : product.id
         opt[:group_id] = product.id if count > 1
         
+        model = []
+        model << "(#{product.brand.alt_displayed_name})" if product.brand && product.brand.alt_displayed_name.present?
+        model << product.name
+        model << "(#{I18n.t("for_#{GENDER[product.gender].to_s}")})" if product.gender.present?
+        model = model.join(' ')
+
         xml.offer(opt) do
           xml.url "http://#{@host}/id/#{product.id}#{@utms}"
           xml.price variant.price
@@ -100,7 +106,7 @@ module Export
           xml.delivery true
           xml.vendor product.brand.name if product.brand
           xml.vendorCode product.sku
-          xml.model "#{product.name} #{'(' + I18n.t("for_#{GENDER[product.gender].to_s}") + ')' if product.gender.present?}".strip
+          xml.model model
           xml.description strip_tags(product.description) if product.description
           xml.country_of_origin product.country.name if product.country
           variant.option_values.each do |ov|
