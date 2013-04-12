@@ -16,7 +16,8 @@ module Export
       product.internal_market_category
     end
 
-    def add_alt_name;false;end
+    def add_alt_vendor_to_model_name?;false;end
+    def add_alt_vendor?;true;end
 
   end
 end

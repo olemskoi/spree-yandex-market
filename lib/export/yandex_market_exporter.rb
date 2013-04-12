@@ -89,7 +89,9 @@ module Export
         opt[:group_id] = product.id if count > 1
         
         model = []
-        model << "(#{product.brand.alt_displayed_name})" if add_alt_name &&  product.brand && product.brand.alt_displayed_name.present?
+        if add_alt_vendor_to_model_name? &&  product.brand && product.brand.alt_displayed_name.present?
+          model << "(#{product.brand.alt_displayed_name})"
+        end
         model << product.name
         model << "(#{I18n.t("for_#{GENDER[product.gender].to_s}")})" if product.gender.present?
         model = model.join(' ')
@@ -105,6 +107,9 @@ module Export
           end
           xml.delivery true
           xml.vendor product.brand.name if product.brand
+          if add_alt_vendor? && product.brand && product.brand.alt_displayed_name.present?
+            xml.vendorAlt product.brand.alt_displayed_name
+          end
           xml.vendorCode product.sku
           xml.model model
           xml.description strip_tags(product.description) if product.description
@@ -147,7 +152,8 @@ module Export
       product.market_category if product.market_category.present?
     end
 
-    def add_alt_name;true;end
+    def add_alt_vendor_to_model_name?;true;end
+    def add_alt_vendor?;false;end
 
   end
 end
