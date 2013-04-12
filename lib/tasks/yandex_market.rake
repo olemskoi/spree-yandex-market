@@ -17,6 +17,10 @@ namespace :spree_yandex_market do
     generate_export_file
   end
 
+  task :generate_alytics => :environment do
+    generate_export_file('alytics')
+  end
+
   desc "Generate Torg.mail.ru export file"
   task :generate_torg_mail_ru => :environment do
     generate_export_file 'torg_mail_ru'

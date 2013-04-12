@@ -23,7 +23,7 @@ module Export
       @currencies = @config.preferred_currency.split(';').map{ |x| x.split(':') }
       @currencies.first[1] = 1
       
-      @preferred_category = Taxon.find_by_name(@config.preferred_category)
+      @preferred_category = preferred_category
       unless @preferred_category.export_to_yandex_market
         raise "Preferred category <#{@preferred_category.name}> not included to export"
       end
@@ -89,7 +89,7 @@ module Export
         opt[:group_id] = product.id if count > 1
         
         model = []
-        model << "(#{product.brand.alt_displayed_name})" if product.brand && product.brand.alt_displayed_name.present?
+        model << "(#{product.brand.alt_displayed_name})" if add_alt_name &&  product.brand && product.brand.alt_displayed_name.present?
         model << product.name
         model << "(#{I18n.t("for_#{GENDER[product.gender].to_s}")})" if product.gender.present?
         model = model.join(' ')
@@ -98,8 +98,8 @@ module Export
           xml.url "http://#{@host}/id/#{product.id}#{@utms}"
           xml.price variant.price
           xml.currencyId @currencies.first.first
-          xml.categoryId product.yandex_market_category_id
-          xml.market_category product.market_category if product.market_category.present?
+          xml.categoryId product_category_id(product)
+          xml.market_category market_category(product)
           product.images.each do |image|
             xml.picture image_url(image)
           end
@@ -134,5 +134,20 @@ module Export
     def asset_host(source)
       "http://assets0#{(1 + source.hash % 5).to_s + '.' + @host}"
     end
+
+    def preferred_category
+      Taxon.find_by_name(@config.preferred_category)
+    end
+
+    def product_category_id(product)
+      product.yandex_market_category_id
+    end
+    
+    def market_category(product)
+      product.market_category if product.market_category.present?
+    end
+
+    def add_alt_name;true;end
+
   end
 end
