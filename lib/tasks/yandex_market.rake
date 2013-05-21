@@ -55,7 +55,7 @@ namespace :spree_yandex_market do
     require File.expand_path(File.join(Rails.root, "config/environment"))
     require File.join(File.dirname(__FILE__), '..', "export/#{ts}_exporter.rb")
     
-    directory = File.join(Rails.root, 'public', "#{ts}")
+    directory = File.join(Rails.root+"../../current/", 'public', "#{ts}")
     mkdir_p directory unless File.exist?(directory)
     
     ::Time::DATE_FORMATS[:ym] = "%Y-%m-%d %H:%M"
