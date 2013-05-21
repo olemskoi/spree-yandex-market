@@ -73,7 +73,7 @@ namespace :spree_yandex_market do
     puts 'Creating symlink...'
     
     # Делаем симлинк на ссылку файла yandex_market_last.gz
-    `ln -sf "#{tfile.path}" "#{File.join(directory, "#{ts}.xml")}"`
+    `ln -sf "#{tfile.path}" "#{File.join(File.join(Rails.root+"../../current/", 'public', "#{ts}"), "#{ts}.xml")}"`
 
     # Удаляем лишнии файлы
     @config = Spree::YandexMarket::Config.instance
