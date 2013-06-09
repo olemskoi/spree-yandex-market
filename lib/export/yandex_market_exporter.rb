@@ -75,6 +75,7 @@ module Export
     def offer_vendor_model(xml, product)
       variants = product.variants.select { |v| v.count_on_hand > 0 }
       count = variants.length
+      images = product.images.limit(10)
 
       gender = case product.gender
         when 1 then 'Мужской'
@@ -102,7 +103,7 @@ module Export
           xml.currencyId @currencies.first.first
           xml.categoryId product_category_id(product)
           xml.market_category market_category(product)
-          product.images.each do |image|
+          images.each do |image|
             xml.picture image_url(image)
           end
           xml.delivery true
