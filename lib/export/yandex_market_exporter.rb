@@ -59,8 +59,6 @@ module Export
             }
 
             xml.offers { # список товаров
-              products = Product.in_yandex_market_categories.active.not_gifts.master_price_gte(0.001)
-              products = products.uniq.select { |p| p.has_stock? && p.yandex_market_category.export_to_yandex_market && p.export_to_yandex_market }
               products.each do |product|
                 offer_vendor_model(xml, product) 
               end
@@ -88,19 +86,13 @@ module Export
 
         opt[:id] = count > 1 ? variant.id : product.id
         opt[:group_id] = product.id if count > 1
-        
-        model = []
-        if add_alt_vendor_to_model_name? &&  product.brand && product.brand.alt_displayed_name.present?
-          model << "(#{product.brand.alt_displayed_name})"
-        end
-        model << product.name
-        model << "(#{I18n.t("for_#{GENDER[product.gender].to_s}")})" if product.gender.present?
-        model = model.join(' ')
+
+        model = model_name(product)
 
         xml.offer(opt) do
           xml.url "http://#{@host}/id/#{product.id}#{@utms}"
           xml.price variant.price
-          xml.currencyId @currencies.first.first
+          xml.currencyId currency_id
           xml.categoryId product_category_id(product)
           xml.market_category market_category(product)
           images.each do |image|
@@ -155,6 +147,25 @@ module Export
 
     def add_alt_vendor_to_model_name?;true;end
     def add_alt_vendor?;false;end
+
+    def products
+      products = Product.in_yandex_market_categories.active.not_gifts.master_price_gte(0.001)
+      products.uniq.select { |p| p.has_stock? && p.yandex_market_category.export_to_yandex_market && p.export_to_yandex_market }
+    end
+
+    def model_name(product)
+      model = []
+      if add_alt_vendor_to_model_name? && product.brand && product.brand.alt_displayed_name.present?
+        model << "(#{product.brand.alt_displayed_name})"
+      end
+      model << product.name
+      model << "(#{I18n.t("for_#{GENDER[product.gender].to_s}")})" if product.gender.present?
+      model.join(' ')
+    end
+
+    def currency_id
+      @currencies.first.first
+    end
 
   end
 end

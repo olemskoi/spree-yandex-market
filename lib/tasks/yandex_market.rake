@@ -17,43 +17,11 @@ namespace :spree_yandex_market do
     generate_export_file
   end
 
-  task :generate_alytics => :environment do
-    generate_export_file('alytics')
-  end
-
-  desc "Generate Torg.mail.ru export file"
-  task :generate_torg_mail_ru => :environment do
-    generate_export_file 'torg_mail_ru'
-  end
-
-  desc "Generates Olx export file"
-  task :generate_olx => :environment do
-    generate_export_file 'olx'
-  end
-
-  desc "Generates Kupitigra export file"
-  task :generate_kupitigra => :environment do
-    generate_export_file 'kupitigra'
-  end
-
-  desc "Generates Wikimart export file"
-  task :generate_wikimart => :environment do
-    generate_export_file 'wikimart'
-  end
-
-  desc 'Generates MailRu export file'
-  task :generate_mail_ru => :environment do
-    generate_export_file 'mail_ru'
-  end
-
-  desc "Generates Lookmart export file"
-  task :generate_lookmart => :environment do
-    generate_export_file 'lookmart'
-  end
-
-  desc 'Generates RetailRocket export file'
-  task :generate_lookmart => :environment do
-    generate_export_file 'retail_rocket'
+  %w(alytics torg_mail_ru olx kupitigra wikimart mail_ru lookmart retail_rocket).each do |export_name|
+    desc "Generate #{export_name.titleize} export file"
+    task "generate_#{export_name}" => :environment do
+      generate_export_file export_name
+    end
   end
 
   def generate_export_file(ts='yandex_market')
