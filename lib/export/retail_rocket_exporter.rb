@@ -8,6 +8,14 @@ module Export
     end
     
     protected
+
+    def preferred_category
+      Taxon.find_by_name(Spree::YandexMarket::Config.get(:category_for_retail_rocket))
+    end
+
+    def product_category_id(product)
+      product.cat.id
+    end
     
     def offer_vendor_model(xml, product)
       images = product.images.limit(10)
