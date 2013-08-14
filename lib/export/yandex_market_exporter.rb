@@ -36,7 +36,7 @@ module Export
       Nokogiri::XML::Builder.new(:encoding => 'utf-8') do |xml|
         xml.doc.create_internal_subset('yml_catalog', nil, 'shops.dtd')
 
-        xml.yml_catalog(:date => Time.now.to_s(:ym)) {
+        xml.yml_catalog({:date => Time.now.to_s(:ym)}.merge(namespaces)) {
           xml.shop { # описание магазина
             xml.name    @config.preferred_short_name
             xml.company @config.preferred_full_name
@@ -105,7 +105,7 @@ module Export
           end
           xml.vendorCode product.sku
           xml.model model
-          xml.description strip_tags(product.description) if product.description
+          xml.description product_description(product) if product_description(product)
           xml.country_of_origin product.country.name if product.country
           variant.option_values.each do |ov|
             unless ov.presentation == 'Без размера'
@@ -117,6 +117,7 @@ module Export
           xml.param gender, :name => 'Пол' if gender.present?
           xml.param product.localized_age, :name => 'Возраст' if product.age
           xml.param product.picture_type, :name => 'Тип рисунка' if product.picture_type
+          additional_params_for_offer(xml, product)
         end
       end
     end
@@ -139,6 +140,10 @@ module Export
 
     def product_category_id(product)
       product.yandex_market_category_id
+    end
+
+    def product_description(product)
+      strip_tags(product.description) if product.description
     end
     
     def market_category(product)
@@ -165,6 +170,15 @@ module Export
 
     def currency_id
       @currencies.first.first
+    end
+
+    def additional_params_for_offer(xml, product)
+      # nothing here
+      # return some xml from descendants if you wish
+    end
+
+    def namespaces
+      {}
     end
 
   end
