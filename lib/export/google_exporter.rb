@@ -72,5 +72,13 @@ module Export
       end
     end
 
+    def model_name(product)
+      model = []
+      model << product.brand.name if product.brand.present?
+      model << product.name
+      model << "(#{I18n.t("for_#{GENDER[product.gender].to_s}")})" if product.gender.present?
+      model.join(' ')
+    end
+
   end
 end
