@@ -38,7 +38,12 @@ module Export
           xml['g'].condition 'new'
           xml['g'].price variant.price
           xml['g'].availability 'in stock'
-          xml['g'].image_link image_url(product.images.first)
+          product_image = product.images.first
+          if product_image
+            xml['g'].image_link image_url(product_image)
+          else
+            xml['g'].image_link "http://#{@host}/assets/noimage/medium.png"
+          end
           xml['g'].brand product.brand.name if product.brand
           xml['g'].mpn product.sku
           if product.cat && product.cat.google_merchant_category
