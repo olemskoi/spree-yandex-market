@@ -27,35 +27,33 @@ module Export
     protected
 
     def offer_vendor_model(xml, product)
-      variants = product.variants.select { |v| v.count_on_hand > 0 }
-      variants_count = variants.count
-      variants.each do |variant|
-        xml.item do
-          xml.title model_name(product)
-          xml.link "http://#{@host}/id/#{product.id}#{utms}"
-          xml.description product_description(product)
-          xml['g'].id (variants_count > 1 ? variant.id : product.id)
-          xml['g'].condition 'new'
-          xml['g'].price variant.price
-          xml['g'].availability 'in stock'
-          product_image = product.images.first
-          if product_image
+      product_image = product.images.first
+      if product_image.present?
+        variants = product.variants.select { |v| v.count_on_hand > 0 }
+        variants_count = variants.count
+        variants.each do |variant|
+          xml.item do
+            xml.title model_name(product)
+            xml.link "http://#{@host}/id/#{product.id}#{utms}"
+            xml.description product_description(product)
+            xml['g'].id (variants_count > 1 ? variant.id : product.id)
+            xml['g'].condition 'new'
+            xml['g'].price variant.price
+            xml['g'].availability 'in stock'
             xml['g'].image_link image_url(product_image)
-          else
-            xml['g'].image_link "http://#{@host}/assets/noimage/medium.png"
-          end
-          xml['g'].brand product.brand.name if product.brand
-          xml['g'].mpn product.sku
-          if product.cat && product.cat.google_merchant_category
-            names = product.cat.google_merchant_category.ancestors.reject{ |a| a.level.zero? }.map{ |a| a.name }
-            names << product.cat.google_merchant_category.name
-            category_name = names.join(' > ')
-            xml['g'].google_product_category category_name
-            xml['g'].product_type category_name
-          end
-          ov = variant.option_values.first
-          if ov && ov.presentation != 'Без размера'
-            xml['g'].size ov.presentation
+            xml['g'].brand product.brand.name if product.brand
+            xml['g'].mpn product.sku
+            if product.cat && product.cat.google_merchant_category
+              names = product.cat.google_merchant_category.ancestors.reject{ |a| a.level.zero? }.map{ |a| a.name }
+              names << product.cat.google_merchant_category.name
+              category_name = names.join(' > ')
+              xml['g'].google_product_category category_name
+              xml['g'].product_type category_name
+            end
+            ov = variant.option_values.first
+            if ov && ov.presentation != 'Без размера'
+              xml['g'].size ov.presentation
+            end
           end
         end
       end
