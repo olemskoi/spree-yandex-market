@@ -16,6 +16,15 @@ module Export
       product.internal_market_category
     end
 
+    def model_name(product)
+      model = []
+      if add_alt_vendor_to_model_name? && product.brand && product.brand.alt_displayed_name.present?
+        model << "(#{product.brand.alt_displayed_name})"
+      end
+      model << product.name
+      model.join(' ')
+    end
+
     def add_alt_vendor_to_model_name?;false;end
     def add_alt_vendor?;true;end
 
