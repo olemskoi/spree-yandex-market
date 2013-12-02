@@ -16,7 +16,7 @@ module Export
                  else ''
                end
 
-      product_price = product.variants.map(&:price).min
+      product_price = product.variants.where('variants.count_on_hand > 0').map(&:price).min
 
       xml.offer(type: 'vendor.model', available: true, id: product.id) do
         xml.url "http://#{@host}/id/#{product.id}#{@utms}"
