@@ -16,9 +16,11 @@ module Export
                  else ''
                end
 
+      product_price = product.variants.map(&:price).min
+
       xml.offer(type: 'vendor.model', available: true, id: product.id) do
         xml.url "http://#{@host}/id/#{product.id}#{@utms}"
-        xml.price product.price
+        xml.price product_price
         xml.currencyId currency_id
         xml.categoryId product_category_id(product)
         xml.market_category market_category(product)
