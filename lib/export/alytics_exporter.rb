@@ -16,11 +16,9 @@ module Export
                  else ''
                end
 
-      product_price = product.variants.where('variants.count_on_hand > 0').map(&:price).min
-
-      xml.offer(type: 'vendor.model', available: true, id: product.id) do
+      xml.offer(type: 'vendor.model', available: product.has_stock?, id: product.id) do
         xml.url "http://#{@host}/id/#{product.id}#{@utms}"
-        xml.price product_price
+        xml.price product_price(product)
         xml.currencyId currency_id
         xml.categoryId product_category_id(product)
         xml.market_category market_category(product)
@@ -43,12 +41,16 @@ module Export
       end
     end
 
+    def product_price(product)
+      product.variants.where('variants.count_on_hand > 0').map(&:price).min
+    end
+
     def preferred_category
       Taxon.find_by_name(@config.preferred_category_for_alytics)
     end
 
     def product_category_id(product)
-      product.cat.id
+      product.cat.id if product.cat.present?
     end
 
     def market_category(product)
