@@ -7,6 +7,8 @@ module Export
     protected
 
     def offer_vendor_model(xml, product)
+      return unless product_price(product).present? && product_category_id(product).present?
+
       xml.offer(id: product.id) do
         xml.url "http://#{@host}/id/#{product.id}#{@utms}"
         xml.price product_price(product)

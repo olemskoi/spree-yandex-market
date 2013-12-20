@@ -16,6 +16,8 @@ module Export
                  else ''
                end
 
+      return unless product_price(product).present? && product_category_id(product).present?
+
       xml.offer(type: 'vendor.model', available: product.has_stock?, id: product.id) do
         xml.url "http://#{@host}/id/#{product.id}#{@utms}"
         xml.price product_price(product)
