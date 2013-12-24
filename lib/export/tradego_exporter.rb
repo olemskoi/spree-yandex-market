@@ -59,7 +59,10 @@ module Export
         end
         xml.type 1
         xml.name model_name(product)
-        xml.description product_description(product) if product_description(product)
+        if product_description(product)
+          xml.description product_description(product)
+          xml.descriptionDefect product_description(product)
+        end
         xml.vendor product.brand.name if product.brand
         xml.model model_name(product)
         cheapest_variant.option_values.each do |ov|
