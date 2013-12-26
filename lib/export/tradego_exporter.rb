@@ -34,7 +34,10 @@ module Export
             end
 
             xml.offers do
-              products.each do |product|
+              cut_price_products.each do |product|
+                offer_vendor_model(xml, product)
+              end
+              discount_products.each do |product|
                 offer_vendor_model(xml, product)
               end
             end
@@ -54,14 +57,15 @@ module Export
         xml.price cheapest_variant.price
         xml.currencyId 'RUR'
         xml.categoryId product_category_id(product)
+        xml.region 'Россия'
         product.images.limit(10).each do |image|
           xml.picture image_url(image)
         end
-        xml.type 1
+        xml.type product.export_to_yandex_market ? 2 : 1
         xml.name model_name(product)
         if product_description(product)
           xml.description product_description(product)
-          xml.descriptionDefect product_description(product)
+          xml.descriptionDefect product_description(product) unless product.export_to_yandex_market?
         end
         xml.vendor product.brand.name if product.brand
         xml.model model_name(product)
@@ -85,12 +89,20 @@ module Export
       model.join(' ')
     end
 
-    def products
+    def old_price_products(cut_price)
       products = Product.in_yandex_market_categories.active.not_gifts.master_price_gte(0.001)
       products.uniq.select do |p|
-        !p.export_to_yandex_market &&
-          p.variants_including_master.select{ |v| available_variant?(v) }.length > 0
+        p.export_to_yandex_market != cut_price &&
+            p.variants_including_master.select{ |v| available_variant?(v) }.length > 0
       end
+    end
+
+    def cut_price_products
+      old_price_products(true)
+    end
+
+    def discount_products
+      old_price_products(false)
     end
 
     def available_variant?(variant)
