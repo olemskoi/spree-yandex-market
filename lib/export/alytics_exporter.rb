@@ -35,11 +35,24 @@ module Export
         xml.vendorCode product.sku
         xml.model model_name(product)
         xml.description product_description(product) if product_description(product)
-        xml.country_of_origin product.country.name if product.country
+        if product.country
+          xml.country_of_origin product.country.name
+          xml.param product.country.name, name: 'Страна'
+        end
+        if product.produced_country
+          xml.param product.produced_country.name, name: 'Произведено'
+        end
         xml.param product.colour, :name => 'Цвет'
-        xml.param gender, :name => 'Пол' if gender.present?
-        xml.param product.localized_age, :name => 'Возраст' if product.age
-        xml.param product.picture_type, :name => 'Тип рисунка' if product.picture_type
+        xml.param product.vendor_color, name: 'Цвет по поставщику' if product.vendor_color.present?
+        xml.param gender, name: 'Пол' if gender.present?
+        xml.param product.localized_age, name: 'Возраст' if product.age
+        xml.param product.picture_type, name: 'Тип рисунка' if product.picture_type.present?
+        if product.orthopedic_properties.present?
+          xml.param product.orthopedic_properties.map(&:name).join(', '), name: 'Ортопедические свойства'
+        end
+        product.product_properties.each do |property|
+          xml.param property.value, name: property.property.name if product.picture_type
+        end
       end
     end
 
