@@ -51,7 +51,7 @@ module Export
           xml.param product.orthopedic_properties.map(&:name).join(', '), name: 'Ортопедические свойства'
         end
         product.product_properties.each do |property|
-          xml.param property.value, name: property.property.name if product.picture_type
+          xml.param property.value, name: property.property.name
         end
       end
     end
