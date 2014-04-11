@@ -61,5 +61,18 @@ module Export
         find{ |ov| ov && ov.option_type.presentation == 'Размер' && ov.presentation != 'Без размера' }
     end
 
+    def preferred_category
+      Taxonomy.wikimart.root
+    end
+
+    def product_category_id(product)
+      category = product.cat
+      if category
+        closest_category_with_wikimart = category.self_and_ancestors.reject{ |c| c.level == 0 }.reverse.
+          find{ |c| c.wikimart_category.present? }
+        closest_category_with_wikimart.wikimart_category.id if closest_category_with_wikimart
+      end
+    end
+
   end
 end
