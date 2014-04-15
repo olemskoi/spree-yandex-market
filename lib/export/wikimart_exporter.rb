@@ -57,8 +57,9 @@ module Export
     end
 
     def variant_size(variant)
-      variant.option_values.
-        find{ |ov| ov && ov.option_type.presentation == 'Размер' && ov.presentation != 'Без размера' }
+      variant.option_values.find do |ov|
+        ov && ov.option_type.presentation.mb_chars.downcase.include?('размер')
+      end
     end
 
     def preferred_category
