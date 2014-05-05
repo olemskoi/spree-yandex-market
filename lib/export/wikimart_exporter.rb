@@ -22,7 +22,7 @@ module Export
       variants.each do |variant|
         opt = { :type => 'vendor.model', :available => true }
 
-        opt[:id] = count > 1 ? variant.id : product.id
+        opt[:id] = variant.id
         opt[:group_id] = product.id if count > 1
 
         model = model_name(product)

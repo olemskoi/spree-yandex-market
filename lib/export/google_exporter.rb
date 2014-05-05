@@ -36,7 +36,7 @@ module Export
             xml.title model_name(product)
             xml.link "http://#{@host}/id/#{product.id}#{utms}"
             xml.description product_description(product)
-            xml['g'].id (variants_count > 1 ? variant.id : product.id)
+            xml['g'].id variant.id
             xml['g'].condition 'new'
             xml['g'].price variant.price
             xml['g'].availability 'in stock'
