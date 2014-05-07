@@ -117,7 +117,7 @@ module Export
           xml.param gender, :name => 'Пол' if gender.present?
           xml.param product.localized_age, :name => 'Возраст' if product.age
           xml.param product.picture_type, :name => 'Тип рисунка' if product.picture_type
-          additional_params_for_offer(xml, product)
+          additional_params_for_offer(xml, product, variant)
         end
       end
     end
@@ -172,7 +172,7 @@ module Export
       @currencies.first.first
     end
 
-    def additional_params_for_offer(xml, product)
+    def additional_params_for_offer(xml, product, variant)
       # nothing here
       # return some xml from descendants if you wish
     end
