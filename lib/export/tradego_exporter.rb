@@ -90,7 +90,7 @@ module Export
     end
 
     def old_price_products(cut_price)
-      products = Product.in_yandex_market_categories.active.not_gifts.master_price_gte(0.001)
+      products = Product.active.not_gifts.master_price_gte(0.001)
       products.uniq.select do |p|
         p.export_to_yandex_market != cut_price &&
             p.variants_including_master.select{ |v| available_variant?(v) }.length > 0

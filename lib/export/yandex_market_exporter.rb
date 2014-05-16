@@ -139,7 +139,11 @@ module Export
     end
 
     def product_category_id(product)
-      product.yandex_market_category_id
+      if product.yandex_market_category_id
+        product.yandex_market_category_id
+      else
+        product.cat.yandex_market_category_id if product.cat && product.cat.yandex_market_category_id
+      end
     end
 
     def product_description(product)
@@ -154,8 +158,8 @@ module Export
     def add_alt_vendor?;false;end
 
     def products
-      products = Product.in_yandex_market_categories.active.not_gifts.master_price_gte(0.001)
-      products.uniq.select { |p| p.has_stock? && p.yandex_market_category.export_to_yandex_market && p.export_to_yandex_market }
+      products = Product.active.not_gifts.master_price_gte(0.001)
+      products.uniq.select { |p| p.has_stock? }
     end
 
     def model_name(product)
