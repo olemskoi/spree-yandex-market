@@ -35,7 +35,8 @@ module Export
 
     def products
       products = Product.active.not_gifts.master_price_gte(0.001)
-      products.uniq
+      products.uniq.select{ |p| p.export_to_yandex_market && p.yandex_market_category_including_catalog &&
+          p.yandex_market_category_including_catalog.export_to_yandex_market }
     end
 
     def minimal_price(product)

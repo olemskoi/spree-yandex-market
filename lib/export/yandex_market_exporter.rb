@@ -159,7 +159,10 @@ module Export
 
     def products
       products = Product.active.not_gifts.master_price_gte(0.001)
-      products.uniq.select { |p| p.has_stock? }
+      products.uniq.select do |p|
+        p.has_stock? && p.export_to_yandex_market && p.yandex_market_category_including_catalog &&
+            p.yandex_market_category_including_catalog.export_to_yandex_market
+      end
     end
 
     def model_name(product)
