@@ -8,6 +8,8 @@ module Export
 
     attr_accessor :host, :currencies
 
+    MIN_ORDER_AMOUNT = 500
+
     def initialize
       @utms = '?utm_source=yandex&utm_medium=market&utm_campaign=market'
     end
@@ -106,7 +108,9 @@ module Export
           xml.vendorCode product.sku
           xml.model model
           xml.description product_description(product) if product_description(product)
-          xml.sales_notes 'Минимальная сумма заказа - 500 руб.'
+          if variant.price < MIN_ORDER_AMOUNT
+            xml.sales_notes "Минимальная сумма заказа - #{MIN_ORDER_AMOUNT} руб."
+          end
           xml.country_of_origin product.country.name if product.country
           variant.option_values.each do |ov|
             unless ov.presentation == 'Без размера'
