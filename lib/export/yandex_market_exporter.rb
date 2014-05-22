@@ -106,6 +106,7 @@ module Export
           xml.vendorCode product.sku
           xml.model model
           xml.description product_description(product) if product_description(product)
+          xml.sales_notes 'Минимальная сумма заказа - 500 руб.'
           xml.country_of_origin product.country.name if product.country
           variant.option_values.each do |ov|
             unless ov.presentation == 'Без размера'
