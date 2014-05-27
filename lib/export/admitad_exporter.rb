@@ -23,6 +23,8 @@ module Export
       xml.offer(opt) do
         xml.url "http://#{@host}/id/#{product.id}#{@utms}"
         xml.price variant.price
+        xml.old_price variant.old_price if variant.old_price.to_i > 0
+        xml.topseller Product.bestsellers(30.days.ago, 100).include?(product)
         xml.currencyId currency_id
         xml.categoryId product_category_id(product)
         xml.market_category market_category(product)
