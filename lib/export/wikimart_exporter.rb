@@ -69,10 +69,27 @@ module Export
     def product_category_id(product)
       category = product.cat
       if category
-        closest_category_with_wikimart = category.self_and_ancestors.reject{ |c| c.level == 0 }.reverse.
-          find{ |c| c.wikimart_category.present? }
-        closest_category_with_wikimart.wikimart_category.id if closest_category_with_wikimart
+        category_with_wikimart = closest_category_with_wikimart(category)
+        category_with_wikimart.wikimart_category.id if category_with_wikimart
       end
+    end
+
+    def market_category(product)
+      category = product.cat
+      if category
+        category_with_wikimart = closest_category_with_wikimart(category)
+        if category_with_wikimart
+          categories_path = category_with_wikimart.wikimart_category.self_and_ancestors.map(&:name)
+          categories_path.shift
+          categories_path.join('/')
+        end
+      end
+    end
+
+    private
+
+    def closest_category_with_wikimart(category)
+      category.self_and_ancestors.reject{ |c| c.level == 0 }.reverse.find{ |c| c.wikimart_category.present? }
     end
 
   end
