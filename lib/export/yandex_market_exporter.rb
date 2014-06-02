@@ -185,7 +185,7 @@ module Export
     end
 
     def additional_params_for_offer(xml, product, variant)
-      xml.oldprice variant.old_price if variant.old_price.to_i > 0
+      # nothing
     end
 
     def namespaces
