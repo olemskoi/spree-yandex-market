@@ -73,6 +73,8 @@ module Export
     protected
     
     def offer_vendor_model(xml, product)
+      return unless product.brand.present? # 'vendor' element is required
+
       variants = product.variants.select { |v| v.count_on_hand > 0 }
       count = variants.length
       images = product.images.limit(10)
@@ -94,6 +96,7 @@ module Export
         xml.offer(opt) do
           xml.url "http://#{@host}/id/#{product.id}#{@utms}"
           xml.price variant.price
+          xml.oldprice variant.old_price if variant.old_price.to_i > 0
           xml.currencyId currency_id
           xml.categoryId product_category_id(product)
           xml.market_category market_category(product)
@@ -101,11 +104,11 @@ module Export
             xml.picture image_url(image)
           end
           xml.delivery true
-          xml.vendor product.brand.name if product.brand
+          xml.vendor product.brand.name
+          xml.vendorCode product.sku
           if add_alt_vendor? && product.brand && product.brand.alt_displayed_name.present?
             xml.vendorAlt product.brand.alt_displayed_name
           end
-          xml.vendorCode product.sku
           xml.model model
           xml.description product_description(product) if product_description(product)
           if variant.price < MIN_ORDER_AMOUNT
