@@ -30,8 +30,7 @@ module Export
         raise "Preferred category <#{@preferred_category.name}> not included to export"
       end
 
-      @categories = @preferred_category.self_and_descendants\
-                    .where(:export_to_yandex_market => true)
+      @categories = @preferred_category.descendants.where(:export_to_yandex_market => true)
 
       @categories_ids = @categories.collect { |x| x.id }
       
@@ -55,7 +54,7 @@ module Export
             xml.categories { # категории товара
               @categories_ids && @categories.each do |cat|
                 @cat_opt = { :id => cat.id }
-                @cat_opt.merge!({ :parentId => cat.parent_id }) unless cat.parent_id.blank?
+                @cat_opt.merge!({ :parentId => cat.parent_id }) if cat.level > 1 && cat.parent_id.present?
                 xml.category(@cat_opt){ xml  << cat.name }
               end
             }
