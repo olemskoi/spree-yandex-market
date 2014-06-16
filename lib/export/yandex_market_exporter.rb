@@ -185,9 +185,11 @@ module Export
       if @config.preferred_extra_model == "sizes"
         sizes = []
         product.variants.each do |variant|
-          sizes << product.variants.last.option_values.map(&:presentation).join(', ') 
+          variant.option_values.each do |val|
+            sizes << val.presentation if val.presentation.present?
+          end
         end
-        model << "(%s)" % sizes.join(', ')
+        model << "(%s)" % sizes.uniq.join(', ')
       else
         model << "(#{I18n.t("for_#{GENDER[product.try(@config.preferred_extra_model)].to_s}")})" if product.try(@config.preferred_extra_model).present?
       end
