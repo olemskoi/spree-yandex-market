@@ -1,7 +1,5 @@
 # encoding: utf-8
 
-
-# -*- coding: utf-8 -*-
 require 'nokogiri'
 
 module Export
@@ -93,7 +91,7 @@ module Export
         opt[:id] = variant.id
         opt[:group_id] = product.id if count > 1
 
-        model = model_name(product)
+        model = model_name(product, variant)
 
         xml.offer(opt) do
           xml.url "http://#{@host}/id/#{product.id}#{@utms}"
@@ -175,21 +173,18 @@ module Export
       end
     end
 
-    def model_name(product)
+    def model_name(product, variant)
       model = []
       if add_alt_vendor_to_model_name? && product.brand && product.brand.alt_displayed_name.present?
         model << "(#{product.brand.alt_displayed_name})"
       end
       model << product.name
-      
       if @config.preferred_extra_model == "sizes"
-        sizes = []
-        product.variants.each do |variant|
-          variant.option_values.each do |val|
-            sizes << val.presentation if val.presentation.present?
+        variant.option_values.each do |ov|
+          unless ov.presentation == 'Без размера'
+            model << "[%s]" % ov.presentation
           end
         end
-        model << "(%s)" % sizes.uniq.join(', ')
       else
         model << "(#{I18n.t("for_#{GENDER[product.try(@config.preferred_extra_model)].to_s}")})" if product.try(@config.preferred_extra_model).present?
       end
