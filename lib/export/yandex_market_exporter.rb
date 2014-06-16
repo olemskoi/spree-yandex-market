@@ -1,3 +1,6 @@
+# encoding: utf-8
+
+
 # -*- coding: utf-8 -*-
 require 'nokogiri'
 
@@ -178,7 +181,17 @@ module Export
         model << "(#{product.brand.alt_displayed_name})"
       end
       model << product.name
-      model << "(#{I18n.t("for_#{GENDER[product.gender].to_s}")})" if product.gender.present?
+      
+      if @config.preferred_extra_model == "sizes"
+        sizes = []
+        product.variants.each do |variant|
+          sizes << product.variants.last.option_values.map(&:presentation).join(', ') 
+        end
+        model << "(%s)" % sizes.join(', ')
+      else
+        model << "(#{I18n.t("for_#{GENDER[product.try(@config.preferred_extra_model)].to_s}")})" if product.try(@config.preferred_extra_model).present?
+      end
+      
       model.join(' ')
     end
 

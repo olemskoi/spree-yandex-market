@@ -1,3 +1,5 @@
+# encoding: utf-8
+
 class YandexMarketConfiguration < Configuration
   preference :category,        :string
   preference :category_for_alytics,        :string
@@ -7,6 +9,7 @@ class YandexMarketConfiguration < Configuration
   preference :short_name,      :string
   preference :full_name,       :string
   preference :url,             :string
+  preference :extra_model,     :string, :default => "gender"
   preference :local_delivery_cost, :float # стоимость доставки по своему региону
 
   
