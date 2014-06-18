@@ -18,8 +18,9 @@ module Export
     end
     
     def offer_vendor_model(xml, product)
+      variant = product.first_variant
       images = product.images.limit(10)
-      model = model_name(product)
+      model = model_name(product, variant)
       xml.offer(type: 'vendor.model', available: true, id: product.id) do
         xml.url "http://#{@host}/id/#{product.id}"
         xml.price minimal_price(product)

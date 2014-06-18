@@ -18,14 +18,14 @@ module Export
     def helper
       @helper ||= ApplicationController.helpers
     end
-    
+
     def export
       @config = Spree::YandexMarket::Config.instance
       @host = @config.preferred_url.sub(%r[^http://],'').sub(%r[/$], '')
 
       @currencies = @config.preferred_currency.split(';').map{ |x| x.split(':') }
       @currencies.first[1] = 1
-      
+
       @preferred_category = preferred_category
       unless @preferred_category.export_to_yandex_market
         raise "Preferred category <#{@preferred_category.name}> not included to export"
@@ -34,44 +34,44 @@ module Export
       @categories = @preferred_category.descendants.where(:export_to_yandex_market => true)
 
       @categories_ids = @categories.collect { |x| x.id }
-      
+
       Nokogiri::XML::Builder.new(:encoding => 'utf-8') do |xml|
         xml.doc.create_internal_subset('yml_catalog', nil, 'shops.dtd')
 
         xml.yml_catalog({:date => Time.now.to_s(:ym)}.merge(namespaces)) {
           xml.shop { # описание магазина
-            xml.name    @config.preferred_short_name
-            xml.company @config.preferred_full_name
-            xml.url     path_to_url('')
-            
-            xml.currencies { # описание используемых валют в магазине
-              @currencies && @currencies.each do |curr|
-                opt = { :id => curr.first, :rate => curr[1] }
-                opt.merge!({ :plus => curr[2] }) if curr[2] && ["CBRF","NBU","NBK","CB"].include?(curr[1])
-                xml.currency(opt)
-              end
-            }        
-            
-            xml.categories { # категории товара
-              @categories_ids && @categories.each do |cat|
-                @cat_opt = { :id => cat.id }
-                @cat_opt.merge!({ :parentId => cat.parent_id }) if cat.level > 1 && cat.parent_id.present?
-                xml.category(@cat_opt){ xml  << cat.name }
-              end
-            }
+                     xml.name    @config.preferred_short_name
+                     xml.company @config.preferred_full_name
+                     xml.url     path_to_url('')
 
-            xml.offers { # список товаров
-              products.each do |product|
-                offer_vendor_model(xml, product) 
-              end
-            }
-          }
-        } 
+                     xml.currencies { # описание используемых валют в магазине
+                                      @currencies && @currencies.each do |curr|
+                                        opt = { :id => curr.first, :rate => curr[1] }
+                                        opt.merge!({ :plus => curr[2] }) if curr[2] && ["CBRF","NBU","NBK","CB"].include?(curr[1])
+                                        xml.currency(opt)
+                                      end
+                                      }
+
+                     xml.categories { # категории товара
+                                      @categories_ids && @categories.each do |cat|
+                                        @cat_opt = { :id => cat.id }
+                                        @cat_opt.merge!({ :parentId => cat.parent_id }) if cat.level > 1 && cat.parent_id.present?
+                                        xml.category(@cat_opt){ xml  << cat.name }
+                                      end
+                                      }
+
+                     xml.offers { # список товаров
+                                  products.each do |product|
+                                    offer_vendor_model(xml, product)
+                                  end
+                                  }
+                     }
+        }
       end.to_xml
     end
-    
+
     protected
-    
+
     def offer_vendor_model(xml, product)
       return unless product.brand.present? # 'vendor' element is required
 
@@ -80,9 +80,9 @@ module Export
       images = product.images.limit(10)
 
       gender = case product.gender
-        when 1 then 'Мужской'
-        when 2 then 'Женский'
-        else ''
+      when 1 then 'Мужской'
+      when 2 then 'Женский'
+      else ''
       end
 
       variants.each do |variant|
@@ -157,7 +157,7 @@ module Export
     def product_description(product)
       strip_tags(product.description) if product.description
     end
-    
+
     def market_category(product)
       product.market_category if product.market_category.present?
     end
@@ -169,7 +169,7 @@ module Export
       products = Product.active.not_gifts.master_price_gte(0.001)
       products.uniq.select do |p|
         p.has_stock? && p.export_to_yandex_market && p.yandex_market_category_including_catalog &&
-            p.yandex_market_category_including_catalog.export_to_yandex_market
+          p.yandex_market_category_including_catalog.export_to_yandex_market
       end
     end
 
@@ -179,16 +179,18 @@ module Export
         model << "(#{product.brand.alt_displayed_name})"
       end
       model << product.name
-      if @config.preferred_extra_model == "sizes"
-        variant.option_values.each do |ov|
-          unless ov.presentation == 'Без размера'
-            model << "[%s]" % ov.presentation
+      if @config.present?
+        if @config.preferred_extra_model == "sizes"
+          variant.option_values.each do |ov|
+            unless ov.presentation == 'Без размера'
+              model << "[%s]" % ov.presentation
+            end
           end
+        else
+          model << "(#{I18n.t("for_#{GENDER[product.try(@config.preferred_extra_model)].to_s}")})" if product.try(@config.preferred_extra_model).present?
         end
-      else
-        model << "(#{I18n.t("for_#{GENDER[product.try(@config.preferred_extra_model)].to_s}")})" if product.try(@config.preferred_extra_model).present?
       end
-      
+
       model.join(' ')
     end
 

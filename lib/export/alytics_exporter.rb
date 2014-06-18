@@ -9,6 +9,7 @@ module Export
     protected
 
     def offer_vendor_model(xml, product)
+      variant = product.first_variant
       images = product.images.limit(10)
       gender = case product.gender
                  when 1 then 'Мужской'
@@ -33,7 +34,7 @@ module Export
           xml.vendorAlt product.brand.alt_displayed_name
         end
         xml.vendorCode product.sku
-        xml.model model_name(product)
+        xml.model model_name(product, variant)
         xml.description product_description(product) if product_description(product)
         if product.country
           xml.country_of_origin product.country.name
@@ -72,14 +73,14 @@ module Export
       product.internal_market_category
     end
 
-    def model_name(product)
-      model = []
-      if add_alt_vendor_to_model_name? && product.brand && product.brand.alt_displayed_name.present?
-        model << "(#{product.brand.alt_displayed_name})"
-      end
-      model << product.name
-      model.join(' ')
-    end
+    # def model_name(product)
+    #   model = []
+    #   if add_alt_vendor_to_model_name? && product.brand && product.brand.alt_displayed_name.present?
+    #     model << "(#{product.brand.alt_displayed_name})"
+    #   end
+    #   model << product.name
+    #   model.join(' ')
+    # end
 
     def add_alt_vendor_to_model_name?;false;end
     def add_alt_vendor?;true;end

@@ -1,3 +1,5 @@
+# encoding: utf-8
+
 # -*- coding: utf-8 -*-
 require 'nokogiri'
 
@@ -23,7 +25,7 @@ module Export
         end
       end.to_xml
     end
-    
+
     protected
 
     def offer_vendor_model(xml, product)

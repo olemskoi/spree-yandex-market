@@ -18,7 +18,7 @@ module Export
                end
 
       opt = { id: product.id, type: 'vendor.model', available: true }
-      model = model_name(product)
+      model = model_name(product, variant)
       xml.offer(opt) do
         xml.url "http://#{@host}/id/#{product.id}#{@utms}"
         xml.price variant.price

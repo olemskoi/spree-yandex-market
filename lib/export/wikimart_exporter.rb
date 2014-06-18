@@ -25,7 +25,7 @@ module Export
         opt[:id] = variant.id
         opt[:group_id] = product.id if count > 1
 
-        model = model_name(product)
+        model = model_name(product, variant)
 
         xml.offer(opt) do
           xml.url "http://#{@host}/id/#{product.id}#{@utms}"

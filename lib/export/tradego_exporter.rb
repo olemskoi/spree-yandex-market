@@ -62,13 +62,13 @@ module Export
           xml.picture image_url(image)
         end
         xml.type product.export_to_yandex_market ? 2 : 1
-        xml.name model_name(product)
+        xml.name model_name(product, variant)
         if product_description(product)
           xml.description product_description(product)
           xml.descriptionDefect product_description(product) unless product.export_to_yandex_market?
         end
         xml.vendor product.brand.name if product.brand
-        xml.model model_name(product)
+        xml.model model_name(product, variant)
         cheapest_variant.option_values.each do |ov|
           unless ov.presentation == 'Без размера'
             unit = product.size_table ? product.size_table.standarted_size_table : 'BRAND'
@@ -82,12 +82,12 @@ module Export
       '?utm_source=tradego&utm_medium=tradego&utm_campaign=tradego'
     end
 
-    def model_name(product)
-      model = []
-      model << product.brand.name if product.brand.present?
-      model << product.name
-      model.join(' ')
-    end
+    # def model_name(product)
+    #   model = []
+    #   model << product.brand.name if product.brand.present?
+    #   model << product.name
+    #   model.join(' ')
+    # end
 
     def old_price_products(cut_price)
       products = Product.active.not_gifts.master_price_gte(0.001)
