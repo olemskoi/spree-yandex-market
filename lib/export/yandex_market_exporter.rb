@@ -134,10 +134,11 @@ module Export
       "http://#{@host.sub(%r[^http://],'')}/#{path.sub(%r[^/],'')}"
     end
 
-    def image_url(image)
-      "#{asset_host(image.to_s)}/#{CGI.escape(image.attachment.url(:large, false))}"
+    def image_url(image, wowm = false)
+      "#{asset_host(image.to_s)}/#{CGI.escape(image.attachment.url((wowm == true ? :large_wowm : :large), false))}"
     end
 
+    
     def asset_host(source)
       "http://assets0#{(1 + source.hash % 5).to_s + '.' + @host}"
     end
