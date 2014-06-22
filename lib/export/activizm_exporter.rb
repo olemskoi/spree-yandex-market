@@ -33,7 +33,7 @@ module Export
         xml.local_delivery_cost @config.preferred_local_delivery_cost 
         xml.vendor product.brand.name if product.brand
         xml.vendorCode product.sku
-        xml.model = model_name(product, variant)
+        xml.model model_name(product, variant)
         xml.description product_description(product) if product_description(product)
         xml.manufacturer_warranty true
         xml.country_of_origin product.country.name if product.country
