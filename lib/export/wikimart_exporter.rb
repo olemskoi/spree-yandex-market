@@ -42,7 +42,7 @@ module Export
             xml.vendorAlt product.brand.alt_displayed_name
           end
           xml.vendorCode product.sku
-          xml.model model
+          xml.model [model, product.sku].join(" ")
           xml.description product_description(product) if product_description(product)
           xml.country_of_origin product.country.name if product.country
           size = variant_size(variant)
