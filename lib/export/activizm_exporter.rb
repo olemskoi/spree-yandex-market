@@ -15,6 +15,8 @@ module Export
       gender = case product.gender
       when 1 then 'M'
       when 2 then 'W'
+      when 3 then 'J'
+      when 4 then 'C'
       else nil
       end
 
