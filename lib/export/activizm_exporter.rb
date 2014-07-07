@@ -1,3 +1,5 @@
+# encoding: utf-8
+
 module Export
 
   class ActivizmExporter < YandexMarketExporter
@@ -5,6 +7,59 @@ module Export
     def initialize
       @utms = '?utm_source=activizm&utm_medium=activizm&utm_campaign=activizm'
     end
+
+    def export
+      @config = Spree::YandexMarket::Config.instance
+      @host = @config.preferred_url.sub(%r[^http://],'').sub(%r[/$], '')
+
+      @currencies = @config.preferred_currency.split(';').map{ |x| x.split(':') }
+      @currencies.first[1] = 1
+
+      @preferred_category = preferred_category
+      unless @preferred_category.export_to_yandex_market
+        raise "Preferred category <#{@preferred_category.name}> not included to export"
+      end
+
+      @categories = @preferred_category.descendants.where(:export_to_yandex_market => true)
+
+      @categories_ids = @categories.collect { |x| x.id }
+
+      Nokogiri::XML::Builder.new(:encoding => 'utf-8') do |xml|
+        xml.doc.create_internal_subset('yml_catalog', nil, 'shops.dtd')
+
+        xml.yml_catalog({:date => Time.now.to_s(:ym)}.merge(namespaces)) {
+          xml.shop { # описание магазина
+                     xml.name    @config.preferred_short_name
+                     xml.company @config.preferred_full_name
+                     xml.url     path_to_url('')
+
+                     xml.currencies { # описание используемых валют в магазине
+                                      @currencies && @currencies.each do |curr|
+                                        opt = { :id => curr.first, :rate => curr[1] }
+                                        opt.merge!({ :plus => curr[2] }) if curr[2] && ["CBRF","NBU","NBK","CB"].include?(curr[1])
+                                        xml.currency(opt)
+                                      end
+                                      }
+
+                     xml.categories { # категории товара
+                                      @categories_ids && @categories.each do |cat|
+                                        next if Product.where(yandex_market_category_id: cat.id).count == 0
+                                        @cat_opt = { :id => cat.id }
+                                        @cat_opt.merge!({ :parentId => cat.parent_id }) if cat.level > 1 && cat.parent_id.present?
+                                        xml.category(@cat_opt){ xml  << cat.name }
+                                      end
+                                      }
+
+                     xml.offers { # список товаров
+                                  products.each do |product|
+                                    offer_vendor_model(xml, product)
+                                  end
+                                  }
+                     }
+        }
+      end.to_xml
+    end
+
 
     protected
 
