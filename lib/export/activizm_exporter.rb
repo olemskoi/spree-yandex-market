@@ -43,7 +43,8 @@ module Export
 
                      xml.categories { # категории товара
                                       @categories_ids && @categories.each do |cat|
-                                        next if Product.where(yandex_market_category_id: cat.id).count == 0
+                                        # next if Product.where(yandex_market_category_id: cat.id).count == 0
+                                        next if offers_count(cat.id) == 0
                                         @cat_opt = { :id => cat.id }
                                         @cat_opt.merge!({ :parentId => cat.parent_id }) if cat.level > 1 && cat.parent_id.present?
                                         xml.category(@cat_opt){ xml  << cat.name }
@@ -62,6 +63,16 @@ module Export
 
 
     protected
+
+
+    def offers_count(cat_id)
+      Product.select("products.id").joins(", products_taxons, variants").where("products.id = products_taxons.product_id
+        and yandex_market_category_id = ?
+        and variants.product_id = products.id
+        and variants.count_on_hand > 0
+        and variants.deleted_at is null", cat_id).count
+    end
+
 
     def offer_vendor_model(xml, product)
       variant = product.first_variant
