@@ -42,9 +42,7 @@ module Export
                                       }
 
                      xml.categories { # категории товара
-                                      @categories_ids && @categories.each do |cat|
-                                        # next if Product.where(yandex_market_category_id: cat.id).count == 0
-                                        next if offers_count(cat.id) == 0
+                                      @categories_ids && @categories.where("id in (?)", activizm_categories_ids).each do |cat|
                                         @cat_opt = { :id => cat.id }
                                         @cat_opt.merge!({ :parentId => cat.parent_id }) if cat.level > 1 && cat.parent_id.present?
                                         xml.category(@cat_opt){ xml  << cat.name }
@@ -64,15 +62,13 @@ module Export
 
     protected
 
-
-    def offers_count(cat_id)
-      Product.select("products.id").joins(", products_taxons, variants").where("products.id = products_taxons.product_id
-        and yandex_market_category_id = ?
-        and variants.product_id = products.id
-        and variants.count_on_hand > 0
-        and variants.deleted_at is null", cat_id).count
+    def activizm_categories_ids
+      out=[]
+      Product.select(:yandex_market_category_id).where("export_to_yandex_market = ? and yandex_market_category_id is not null",  true).group(:yandex_market_category_id).each do |cat|
+        out += Taxon.find(cat.yandex_market_category_id).self_and_ancestors.map(&:id)
+      end
+      out.uniq
     end
-
 
     def offer_vendor_model(xml, product)
       variant = product.first_variant
@@ -81,8 +77,6 @@ module Export
       gender = case product.gender
       when 1 then 'M'
       when 2 then 'W'
-      when 3 then 'J'
-      when 4 then 'C'
       else nil
       end
 
@@ -160,8 +154,6 @@ module Export
         ov && ov.option_type.xml_type.include?('color') rescue nil
       end
     end
-
-
 
   end
 
