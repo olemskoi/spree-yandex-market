@@ -80,7 +80,7 @@ module Export
       else nil
       end
 
-      opt = { id: product.id, available: true }
+      opt = { id: product.id, available: true, type: 'vendor.model'}
       model = model_name(product, variant)
       xml.offer(opt) do
         xml.url "http://#{@host}/id/#{product.id}#{@utms}"
