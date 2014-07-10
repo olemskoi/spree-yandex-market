@@ -121,7 +121,7 @@ module Export
                 xml_type = "color"
               end
 
-              xml.varint(type: xml_type) do
+              xml.variant(type: xml_type) do
                 variant.option_values.each do |ov|
                   opt = {}
                   if ov.option_type.xml_type.include?('size')
