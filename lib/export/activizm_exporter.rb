@@ -94,7 +94,6 @@ module Export
         xml.delivery true
         xml.local_delivery_cost @config.preferred_local_delivery_cost
         xml.vendor product.brand.name if product.brand
-        xml.vendorCode product.sku
         model = []
         model << product.brand.name if product.brand.present?
         model << product.name
