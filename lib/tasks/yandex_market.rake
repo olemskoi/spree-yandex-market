@@ -30,15 +30,16 @@ namespace :spree_yandex_market do
   def generate_export_file(ts='yandex_market')
     require File.expand_path(File.join(Rails.root, "config/environment"))
     require File.join(File.dirname(__FILE__), '..', "export/#{ts}_exporter.rb")
-    
+
     directory = File.join(Rails.root+"../../current/", 'public', "#{ts}")
     mkdir_p directory unless File.exist?(directory)
-    
+
     ::Time::DATE_FORMATS[:ym] = "%Y-%m-%d %H:%M"
     
     yml_xml = Export.const_get("#{ts.camelize}Exporter").new.export
-    
-    puts 'Saving file...'
+
+    verbose = Rake.verbose
+    puts 'Saving file...' if verbose
 
     # Создаем файл, сохраняем в нужной папке,
     tfile_basename = "#{ts}_#{Time.now.strftime("%Y_%m_%d__%H_%M")}"
@@ -46,8 +47,8 @@ namespace :spree_yandex_market do
     tfile.write(yml_xml)
     tfile.close
 
-    puts 'Creating symlink...'
-    
+    puts 'Creating symlink...' if verbose
+
     # Делаем симлинк на ссылку файла yandex_market_last.gz
     `ln -sf "#{tfile.path}" "#{File.join(File.join(Rails.root+"../../current/", 'public', "#{ts}"), "#{ts}.xml")}"`
 
@@ -58,7 +59,7 @@ namespace :spree_yandex_market do
     @export_files = Dir[File.join(directory, '**', '*')]\
                     .map { |x| [File.basename(x), File.mtime(x)] }\
                     .sort { |x, y| y.last <=> x.last }
-    
+
     e = @export_files.find { |x| x.first == "#{ts}.gz" }
     @export_files.reject! { |x| x.first == "#{ts}.gz" }
     @export_files.unshift(e)
