@@ -62,13 +62,13 @@ module Export
           xml.picture image_url(image)
         end
         xml.type product.export_to_yandex_market ? 2 : 1
-        xml.name model_name(product, variant)
+        xml.name model_name(product, cheapest_variant)
         if product_description(product)
           xml.description product_description(product)
           xml.descriptionDefect product_description(product) unless product.export_to_yandex_market?
         end
         xml.vendor product.brand.name if product.brand
-        xml.model model_name(product, variant)
+        xml.model model_name(product, cheapest_variant)
         cheapest_variant.option_values.each do |ov|
           unless ov.presentation == 'Без размера'
             unit = product.size_table ? product.size_table.standarted_size_table : 'BRAND'
