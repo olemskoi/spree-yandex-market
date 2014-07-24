@@ -135,7 +135,7 @@ module Export
     end
 
     def image_url(image, wowm = false)
-      "#{asset_host(image.to_s)}/#{CGI.escape(image.attachment.url((wowm == true ? :large_wowm : :large), false))}"
+      "#{asset_host(image.to_s)}#{image.attachment.url((wowm == true ? :large_wowm : :large), false)}"
     end
 
     
