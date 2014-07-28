@@ -94,10 +94,7 @@ module Export
         xml.delivery true
         xml.local_delivery_cost @config.preferred_local_delivery_cost
         xml.vendor product.brand.name if product.brand
-        model = []
-        model << product.brand.name if product.brand.present?
-        model << product.name
-        xml.model model.join(' ')
+        xml.model product.name
         xml.description product_description(product) if product_description(product)
         xml.manufacturer_warranty true
         xml.country_of_origin product.country.name if product.country
