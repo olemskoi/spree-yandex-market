@@ -156,7 +156,11 @@ module Export
     end
 
     def product_description(product)
-      strip_tags(product.description) if product.description
+      if product.description.present?
+        strip_tags(product.description)
+      elsif product.short_description.present?
+        strip_tags(product.short_description)
+      end
     end
 
     def market_category(product)
