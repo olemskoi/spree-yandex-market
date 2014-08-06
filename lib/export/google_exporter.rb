@@ -79,6 +79,9 @@ module Export
 
     def model_name(product)
       model = []
+      if product.age_restriction.present? && product.age_restriction != 'none'
+        model << "(#{Product::AGE_RESTRICTIONS[product.age_restriction]})"
+      end
       model << product.brand.name if product.brand.present?
       model << product.name
       model.join(' ')
