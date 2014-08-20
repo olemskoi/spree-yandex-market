@@ -40,7 +40,7 @@ module Export
             xml.description product_description(product)
             xml['g'].id variant.id
             xml['g'].condition 'new'
-            xml['g'].price variant.price
+            xml['g'].price "#{variant.price} RUB"
             xml['g'].availability 'in stock'
             xml['g'].image_link image_url(product_image, true)
             xml['g'].brand product.brand.name if product.brand
@@ -54,7 +54,11 @@ module Export
             end
             ov = variant.option_values.first
             if ov && ov.presentation != 'Без размера'
+              xml['g'].item_group_id product.id
               xml['g'].size ov.presentation
+            end
+            if product.gender.present?
+              xml['g'].gender gender(product)
             end
           end
         end
@@ -85,6 +89,14 @@ module Export
       model << product.brand.name if product.brand.present?
       model << product.name
       model.join(' ')
+    end
+
+    def gender(product)
+      case product.gender
+        when 1 then 'male'
+        when 2 then 'female'
+        else 'unisex'
+      end
     end
 
   end
