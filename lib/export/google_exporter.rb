@@ -40,7 +40,12 @@ module Export
             xml.description product_description(product)
             xml['g'].id variant.id
             xml['g'].condition 'new'
-            xml['g'].price "#{variant.price} RUB"
+            if variant.old_price.to_i > 0
+              xml['g'].price "#{variant.old_price} RUB"
+              xml['g'].sale_price "#{variant.price} RUB"
+            else
+              xml['g'].price "#{variant.price} RUB"
+            end
             xml['g'].availability 'in stock'
             xml['g'].image_link image_url(product_image, true)
             xml['g'].brand product.brand.name if product.brand
