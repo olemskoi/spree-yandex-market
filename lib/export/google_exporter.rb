@@ -65,6 +65,9 @@ module Export
             if product.gender.present?
               xml['g'].gender gender(product)
             end
+            if product.age_group.present? && product.age_group != 'none'
+              xml['g'].age_group product.age_group
+            end
           end
         end
       end
