@@ -62,11 +62,18 @@ module Export
               xml['g'].item_group_id product.id
               xml['g'].size ov.presentation
             end
+            if ov
+              if ov.google_color.present?
+                xml['g'].color ov.google_color.name
+              elsif product.google_color.present?
+                xml['g'].color product.google_color.name
+              end
+            end
             if product.gender.present?
               xml['g'].gender gender(product)
             end
-            if product.age_group.present? && product.age_group != 'none'
-              xml['g'].age_group product.age_group
+            if variant.age_group.present? && variant.age_group != 'none'
+              xml['g'].age_group variant.age_group
             end
           end
         end
