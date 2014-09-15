@@ -148,10 +148,10 @@ module Export
     end
 
     def product_category_id(product)
-      if product.yandex_market_category_id
+      if product.yandex_market_category
         product.yandex_market_category_id
       else
-        product.cat.yandex_market_category_id if product.cat && product.cat.yandex_market_category_id
+        product.cat.yandex_market_category_id if product.cat && product.cat.yandex_market_category
       end
     end
 
