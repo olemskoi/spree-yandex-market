@@ -125,6 +125,20 @@ module Export
           xml.param gender, :name => 'Пол' if gender.present?
           xml.param product.localized_age, :name => 'Возраст' if product.age
           xml.param product.picture_type, :name => 'Тип рисунка' if product.picture_type
+          xml.param series(product), name: 'Линейка' if series(product).present?
+          xml.param age_from(variant), name: 'Возраст от', unit: 'месяцев' if age_from(variant).present?
+          xml.param age_to(variant), name: 'Возраст до', unit: 'месяцев' if age_to(variant).present?
+          xml.param variant.width, name: 'Ширина', unit: 'см' if variant.width.present?
+          xml.param variant.height, name: 'Высота', unit: 'см' if variant.height.present?
+          xml.param variant.depth, name: 'Глубина', unit: 'см' if variant.depth.present?
+          xml.param variant.weight, name: 'Вес', unit: 'кг' if variant.weight.present?
+          product.product_properties.each do |product_property|
+            xml.param product_property.value, name: product_property.property.name
+          end
+          if product.orthopedic_properties.present?
+            xml.param product.orthopedic_properties.map(&:name).join(', '), name: 'Ортопедические свойства'
+          end
+          xml.param seasons(product), name: 'Сезоны' if seasons(product).present?
           additional_params_for_offer(xml, product, variant)
         end
       end
@@ -201,6 +215,23 @@ module Export
 
     def currency_id
       @currencies.first.first
+    end
+
+    def series(product)
+      series_property = product.product_properties.find{ |p| p.property.name.mb_chars.downcase == 'серия' }
+      series_property.value if series_property.present?
+    end
+
+    def age_from(variant)
+      variant.age_from if variant.respond_to?(:age_from) && variant.age_from.present?
+    end
+
+    def age_to(variant)
+      variant.age_to if variant.respond_to?(:age_to) && variant.age_to.present?
+    end
+
+    def seasons(product)
+      product.season.map{ |s| I18n.t(s) }.join(', ')
     end
 
     def additional_params_for_offer(xml, product, variant)
