@@ -115,6 +115,7 @@ module Export
             xml.sales_notes "Минимальная сумма заказа - #{MIN_ORDER_AMOUNT} руб."
           end
           xml.country_of_origin product.country.name if product.country
+          xml.barcode variant.barcode if variant.barcode.present?
           variant.option_values.each do |ov|
             unless ov.presentation == 'Без размера'
               unit = product.size_table ? product.size_table.standarted_size_table : 'BRAND'
