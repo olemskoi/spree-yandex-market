@@ -111,9 +111,7 @@ module Export
           end
           xml.model model
           xml.description product_description(product) if product_description(product)
-          if variant.price < MIN_ORDER_AMOUNT
-            xml.sales_notes "Минимальная сумма заказа - #{MIN_ORDER_AMOUNT} руб."
-          end
+          xml.sales_notes "Минимальная сумма заказа - #{MIN_ORDER_AMOUNT} руб."
           xml.country_of_origin product.country.name if product.country
           xml.barcode variant.barcode if variant.barcode.present?
           variant.option_values.each do |ov|
@@ -220,6 +218,9 @@ module Export
 
     def series(product)
       series_property = product.product_properties.find{ |p| p.property.name.mb_chars.downcase == 'серия' }
+      unless series_property.present?
+        series_property = product.product_properties.find{ |p| p.property.name.mb_chars.downcase == 'коллекция' }
+      end
       series_property.value if series_property.present?
     end
 
