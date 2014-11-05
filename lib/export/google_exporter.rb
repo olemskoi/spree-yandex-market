@@ -89,8 +89,8 @@ module Export
     end
 
     def product_description(product)
-      if product.description
-        strip_tags(product.description)
+      if product.description.present? or product.short_description.present?
+        strip_tags(product.short_description + ' ' + product.description).strip
       else
         model_name(product)
       end

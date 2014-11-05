@@ -169,10 +169,8 @@ module Export
     end
 
     def product_description(product)
-      if product.description.present?
-        strip_tags(product.description)
-      elsif product.short_description.present?
-        strip_tags(product.short_description)
+      if product.description.present? or product.short_description.present?
+        strip_tags(product.short_description + ' ' + product.description).strip
       end
     end
 
