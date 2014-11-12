@@ -75,7 +75,7 @@ module Export
     def offer_vendor_model(xml, product)
       return unless product.brand.present? # 'vendor' element is required
 
-      variants = product.variants.select { |v| v.count_on_hand > 0 }
+      variants = product.variants #.select { |v| v.count_on_hand > 0 } need all variants
       count = variants.length
       images = product.images.limit(10)
 
@@ -86,7 +86,7 @@ module Export
       end
 
       variants.each do |variant|
-        opt = { :type => 'vendor.model', :available => true }
+        opt = { :type => 'vendor.model', :available => variant.available? }
 
         opt[:id] = variant.id
         opt[:group_id] = product.id if count > 1
@@ -182,7 +182,7 @@ module Export
     def add_alt_vendor?;false;end
 
     def products
-      products = Product.active.not_gifts.master_price_gte(0.001)
+      products = Product.not_gifts.master_price_gte(0.001)
       products.uniq.select do |p|
         p.has_stock? && p.export_to_yandex_market && p.yandex_market_category_including_catalog &&
           p.yandex_market_category_including_catalog.export_to_yandex_market
