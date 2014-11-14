@@ -14,7 +14,7 @@ Gem::Specification.new do |s|
              "app/views/admin/yandex_market_settings/shared/_configuration_menu.html.erb", "app/views/admin/yandex_market_settings/show.html.erb",
              "app/views/admin/yandex_market_settings/ware_property.html.erb", "config/locales/en-US.yml", "config/locales/ru.yml",
              "config/routes.rb", "db/migrate/20110110094042_add_export_flag_to_product.rb", "db/migrate/20120424050308_add_export_flag_to_taxon.rb",
-             "lib/export/activizm_exporter.rb" "lib/export/admitad_exporter.rb", "lib/export/alytics_exporter.rb",
+             "lib/export/activizm_exporter.rb", "lib/export/admitad_exporter.rb", "lib/export/alytics_exporter.rb",
              "lib/export/alytics_category_exporter.rb", "lib/export/berito_exporter.rb", "lib/export/criteo_exporter.rb",
              "lib/export/google_exporter.rb", "lib/export/kupitigra_exporter.rb", "lib/export/lookmart_exporter.rb",
              "lib/export/mail_ru_exporter.rb", "lib/export/market_ru_exporter.rb", "lib/export/mixmarket_exporter.rb",
