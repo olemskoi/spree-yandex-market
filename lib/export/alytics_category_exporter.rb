@@ -60,23 +60,21 @@ module Export
     protected
 
     def offer_category(xml, category)
-      xml.offer(available: category.products.on_hand_variants.present?, id: category.id, type: 'vendor.model') do
+      products = Product.in_taxon category
+      xml.offer(available: products.on_hand_variants.present?, id: category.id, type: 'vendor.model') do
         xml.url "http://#{@host}/#{category.permalink}#{@utms}"
-        products = category.products.not_gifts
         product_ids = products.map(&:id)
-        variants = Variant.where(product_id: product_ids).where('count_on_hand > 0').is_not_master
-        min_price = variants.map(&:price).min.to_i
+        variants = Variant.where(product_id: product_ids).is_not_master
+        max_price = variants.map(&:price).max.to_i
 
-        xml.price min_price > 0 ? min_price : 1
+        xml.price max_price
         xml.currencyId 'RUR'
         xml.categoryId category.id
         xml.name category.name
 
         brands = Taxon.brands_by_category(category)
 
-        brand_names = brands.map do |brand|
-          [brand.name] + brand.alt_name.to_s.split(',').map(&:strip) + [brand.alt_displayed_name]
-        end.flatten.uniq.compact.sort - ['']
+        brand_names = brands.map { |brand| [brand.name, brand.alt_displayed_name] }.flatten.uniq.compact.sort - ['']
 
         brand_names.each_with_index do |brand_name, i|
           xml.param brand_name, name: "brand#{i}"
@@ -117,10 +115,8 @@ module Export
             xml.param value, name: "#{name} #{i}"
           end
         end
-
       end
     end
-
 
     def preferred_category
       Taxon.find_by_name(@config.preferred_category_for_alytics)
