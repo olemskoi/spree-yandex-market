@@ -62,6 +62,13 @@ module Export
     def offer_category(xml, category)
       xml.offer(available: category.products.on_hand_variants.present?, id: category.id, type: 'vendor.model') do
         xml.url "http://#{@host}/#{category.permalink}#{@utms}"
+        products = category.products.not_gifts
+        product_ids = products.map(&:id)
+        variants = Variant.where(product_id: product_ids).where('count_on_hand > 0').is_not_master
+        min_price = variants.map(&:price).min.to_i
+
+        xml.price min_price > 0 ? min_price : 1
+        xml.currencyId 'RUR'
         xml.categoryId category.id
         xml.name category.name
 
@@ -74,13 +81,6 @@ module Export
         brand_names.each_with_index do |brand_name, i|
           xml.param brand_name, name: "brand#{i}"
         end
-
-        products = category.products.not_gifts
-        product_ids = products.map(&:id)
-        variants = Variant.where(product_id: product_ids).where('count_on_hand > 0').is_not_master
-        min_price = variants.map(&:price).min.to_i
-
-        xml.price min_price > 0 ? min_price : 1
 
         colours = products.map{|p| p.colour.to_s.mb_chars.downcase.to_s}.uniq
         vendor_colors = products.map{|p| p.vendor_color.to_s.mb_chars.downcase.to_s}.uniq
