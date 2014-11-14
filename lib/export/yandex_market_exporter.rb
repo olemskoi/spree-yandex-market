@@ -170,7 +170,7 @@ module Export
 
     def product_description(product)
       if product.description.present? or product.short_description.present?
-        strip_tags(product.short_description + ' ' + product.description).strip
+        strip_tags(product.short_description.to_s + ' ' + product.description.to_s).strip
       end
     end
 
