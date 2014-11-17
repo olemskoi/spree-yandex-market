@@ -93,11 +93,15 @@ module Export
 
         model = model_name(product, variant)
 
-        if variant.price.to_i > 1
+        price = variant.price
+        if price.to_i > 1
           xml.offer(opt) do
             xml.url "http://#{@host}/id/#{product.id}#{@utms}"
-            xml.price variant.price
-            xml.oldprice variant.old_price if variant.old_price.to_i > 0
+            xml.price price
+            old_price = variant.old_price
+            if old_price.to_i > 0 and price / old_price <= 0.95
+              xml.oldprice old_price
+            end
             xml.currencyId currency_id
             xml.categoryId product_category_id(product)
             xml.market_category market_category(product)
