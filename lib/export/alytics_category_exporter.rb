@@ -67,28 +67,29 @@ module Export
       max_price = variants.map(&:price).max.to_i
       brands = Taxon.brands_by_category(category)
 
-      brand_names = brands.map do |brand|
+      brand_names = brands.map(&:name).flatten.uniq.compact.sort - ['']
+
+      brand_alt_names = brands.map(&:alt_displayed_name).flatten.uniq.compact.sort - ['']
+
+      brand_translit_names = brands.map do |brand|
         if brand.alt_name.present?
-          alt_names = brand.alt_name.include?(',') ? brand.alt_name.split(',') : brand.alt_name.split(' ').compact
-          [brand.name, brand.alt_displayed_name] + alt_names
-        else
-          [brand.name, brand.alt_displayed_name]
+          brand.alt_name.include?(',') ? brand.alt_name.split(',') : brand.alt_name.split(' ').compact
         end
       end.flatten.uniq.compact.sort - ['']
 
-      colours = products.map{|p| p.colour.to_s.mb_chars.downcase.to_s}.uniq
-      vendor_colors = products.map{|p| p.vendor_color.to_s.mb_chars.downcase.to_s}.uniq
-
-      colors = (colours + vendor_colors).uniq.sort - ['']
-      ages = products.map{|p| p.localized_age}.uniq
-      picture_types = products.map{|p| p.picture_type.to_s.mb_chars.downcase.to_s}.compact.uniq - ['']
-      orthopedic_properties = products.map{|p| p.orthopedic_properties.map(&:name).join(', ')}.flatten.uniq - ['']
-
-      products_properties = products.map do |product|
-        product.product_properties.map do |property|
-          {value: property.value, name: property.property.name}
-        end
-      end.flatten.group_by{|pp| pp[:name]}
+      # colours = products.map{|p| p.colour.to_s.mb_chars.downcase.to_s}.uniq
+      # vendor_colors = products.map{|p| p.vendor_color.to_s.mb_chars.downcase.to_s}.uniq
+      #
+      # colors = (colours + vendor_colors).uniq.sort - ['']
+      # ages = products.map{|p| p.localized_age}.uniq
+      # picture_types = products.map{|p| p.picture_type.to_s.mb_chars.downcase.to_s}.compact.uniq - ['']
+      # orthopedic_properties = products.map{|p| p.orthopedic_properties.map(&:name).join(', ')}.flatten.uniq - ['']
+      #
+      # products_properties = products.map do |product|
+      #   product.product_properties.map do |property|
+      #     {value: property.value, name: property.property.name}
+      #   end
+      # end.flatten.group_by{|pp| pp[:name]}
 
       category_names.each do |category_name|
         xml.offer(available: products.on_hand_variants.present?, id: category.id, type: 'vendor.model') do
@@ -102,28 +103,34 @@ module Export
           brand_names.each_with_index do |brand_name, i|
             xml.param brand_name, name: "brand#{i}"
           end
-
-          colors.each_with_index do |color, i|
-            xml.param color, name: "color#{i}"
+          brand_alt_names.each_with_index do |brand_name, i|
+            xml.param brand_name, name: "brand-alt#{i}"
+          end
+          brand_translit_names.each_with_index do |brand_name, i|
+            xml.param brand_name, name: "brand-lang#{i}"
           end
 
-          ages.each_with_index do |age, i|
-            xml.param age, name: "age#{i}"
-          end
-
-          picture_types.each_with_index do |picture_type, i|
-            xml.param picture_type, name: "picture_type#{i}"
-          end
-
-          orthopedic_properties.each_with_index do |orthopedic_property, i|
-            xml.param orthopedic_property, name: "orthopedic_property#{i}"
-          end
-
-          products_properties.each do |name, values|
-            values.map{|v| v[:value]}.uniq.sort.each_with_index do |value, i|
-              xml.param value, name: "#{name} #{i}"
-            end
-          end
+          # colors.each_with_index do |color, i|
+          #   xml.param color, name: "color#{i}"
+          # end
+          #
+          # ages.each_with_index do |age, i|
+          #   xml.param age, name: "age#{i}"
+          # end
+          #
+          # picture_types.each_with_index do |picture_type, i|
+          #   xml.param picture_type, name: "picture_type#{i}"
+          # end
+          #
+          # orthopedic_properties.each_with_index do |orthopedic_property, i|
+          #   xml.param orthopedic_property, name: "orthopedic_property#{i}"
+          # end
+          #
+          # products_properties.each do |name, values|
+          #   values.map{|v| v[:value]}.uniq.sort.each_with_index do |value, i|
+          #     xml.param value, name: "#{name} #{i}"
+          #   end
+          # end
         end
       end
     end
