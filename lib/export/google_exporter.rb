@@ -46,7 +46,7 @@ module Export
             else
               xml['g'].price "#{variant.price} RUB"
             end
-            xml['g'].availability 'in stock'
+            xml['g'].availability(variant.available? ? 'in stock' : 'out of stock')
             xml['g'].image_link image_url(product_image, true)
             xml['g'].brand product.brand.name if product.brand
             xml['g'].mpn product.sku
@@ -90,7 +90,7 @@ module Export
 
     def product_description(product)
       if product.description.present? or product.short_description.present?
-        strip_tags(product.short_description + ' ' + product.description).strip
+        strip_tags(product.short_description.to_s + ' ' + product.description.to_s).strip
       else
         model_name(product)
       end
