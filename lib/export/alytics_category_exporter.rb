@@ -61,7 +61,7 @@ module Export
 
     def offer_category(xml, category)
       return if category.name.mb_chars.downcase.include?('скидка')
-      category_names = ([category.name] + category.name.split(' ').compact).uniq
+      # category_names = ([category.name] + category.name.split(' ').compact).uniq
       products = Product.in_taxon category
       product_ids = products.map(&:id)
       variants = Variant.where(product_id: product_ids).is_not_master
@@ -78,6 +78,8 @@ module Export
         end
       end.flatten.uniq.compact.sort - ['']
 
+      brand_names = (brand_names + brand_alt_names + brand_translit_names).uniq
+
       # colours = products.map{|p| p.colour.to_s.mb_chars.downcase.to_s}.uniq
       # vendor_colors = products.map{|p| p.vendor_color.to_s.mb_chars.downcase.to_s}.uniq
       #
@@ -92,24 +94,24 @@ module Export
       #   end
       # end.flatten.group_by{|pp| pp[:name]}
 
-      category_names.each do |category_name|
+      # category_names.each do |category_name|
         xml.offer(available: products.on_hand_variants.present?, id: category.id, type: 'vendor.model') do
           xml.url "http://#{@host}/#{category.permalink}#{@utms}"
 
           xml.price max_price
           xml.currencyId 'RUR'
           xml.categoryId category.id
-          xml.name category_name
+          xml.name category.name # category_name
 
           brand_names.each_with_index do |brand_name, i|
             xml.param brand_name, name: "brand#{i}"
           end
-          brand_alt_names.each_with_index do |brand_name, i|
-            xml.param brand_name, name: "brand-alt#{i}"
-          end
-          brand_translit_names.each_with_index do |brand_name, i|
-            xml.param brand_name, name: "brand-lang#{i}"
-          end
+          # brand_alt_names.each_with_index do |brand_name, i|
+          #   xml.param brand_name, name: "brand-alt#{i}"
+          # end
+          # brand_translit_names.each_with_index do |brand_name, i|
+          #   xml.param brand_name, name: "brand-lang#{i}"
+          # end
 
           # colors.each_with_index do |color, i|
           #   xml.param color, name: "color#{i}"
@@ -133,7 +135,7 @@ module Export
           #   end
           # end
         end
-      end
+      # end # category_names.each 
     end
 
     def preferred_category
