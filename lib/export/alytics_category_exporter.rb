@@ -60,6 +60,7 @@ module Export
     protected
 
     def offer_category(xml, category)
+      return if category.name.mb_chars.downcase.include?('скидка')
       category_names = ([category.name] + category.name.split(' ').compact).uniq
       products = Product.in_taxon category
       product_ids = products.map(&:id)
