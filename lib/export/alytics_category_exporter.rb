@@ -135,7 +135,7 @@ module Export
           #   end
           # end
         end
-      # end # category_names.each 
+      # end # category_names.each
     end
 
     def preferred_category
