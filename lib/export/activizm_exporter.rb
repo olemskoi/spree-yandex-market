@@ -65,7 +65,8 @@ module Export
     def activizm_categories_ids
       out=[]
       Product.select(:yandex_market_category_id).where("export_to_yandex_market = ? and yandex_market_category_id is not null",  true).group(:yandex_market_category_id).each do |cat|
-        out += Taxon.find(cat.yandex_market_category_id).self_and_ancestors.map(&:id)
+        taxon = Taxon.where(id: cat.yandex_market_category_id).first
+        out += taxon.self_and_ancestors.map(&:id) if taxon
       end
       out.uniq
     end
@@ -107,6 +108,8 @@ module Export
         if cnt > 0
           xml.variantList do
             variants.each do |variant|
+              next unless variant.export_to_yandex_market?
+
               size = variant_size(variant)
               color = variant_color(variant)
               if size && color

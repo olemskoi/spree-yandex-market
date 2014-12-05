@@ -31,7 +31,7 @@ module Export
     def offer_vendor_model(xml, product)
       product_image = product.images.first
       if product_image.present?
-        variants = product.variants.select { |v| v.count_on_hand > 0 }
+        variants = product.variants.select { |v| v.count_on_hand > 0 && v.export_to_yandex_market? }
         variants_count = variants.count
         variants.each do |variant|
           xml.item do

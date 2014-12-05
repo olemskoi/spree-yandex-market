@@ -86,6 +86,8 @@ module Export
       end
 
       variants.each do |variant|
+        next unless variant.export_to_yandex_market?
+
         opt = {type: 'vendor.model', available: true}
 
         opt[:id] = variant.id
