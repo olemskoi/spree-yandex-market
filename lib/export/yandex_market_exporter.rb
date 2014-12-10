@@ -140,7 +140,14 @@ module Export
             xml.param variant.depth, name: 'Глубина', unit: 'см' if variant.depth.present?
             xml.param variant.weight, name: 'Вес', unit: 'кг' if variant.weight.present?
             product.product_properties.each do |product_property|
-              xml.param product_property.value, name: product_property.property.name
+              yandex_name = product_property.property.yandex_name
+              yandex_tag = product_property.property.yandex_tag
+              name = yandex_name.present? ? yandex_name : product_property.property.name
+              if yandex_tag.present?
+                xml.send(yandex_tag.to_sym, product_property.value, name: name)
+              else
+                xml.param product_property.value, name: name
+              end
             end
             if product.orthopedic_properties.present?
               xml.param product.orthopedic_properties.map(&:name).join(', '), name: 'Ортопедические свойства'
