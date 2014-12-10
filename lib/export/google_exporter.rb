@@ -89,21 +89,25 @@ module Export
     end
 
     def product_description(product)
-      if product.description.present? or product.short_description.present?
-        strip_tags(product.short_description.to_s + ' ' + product.description.to_s).strip
-      else
-        model_name(product)
-      end
+      description = if product.description.present? or product.short_description.present?
+                      strip_tags(product.short_description.to_s + ' ' + product.description.to_s).strip
+                    else
+                      product.product_properties.map { |p| "#{p.property.name} #{p.value}" }.join(', ')
+                    end
+      (description.to_s.length > 0) ? description : model_name(product)
     end
 
     def model_name(product)
-      model = []
-      if product.age_restriction.present? && product.age_restriction != 'none'
-        model << "(#{Product::AGE_RESTRICTIONS[product.age_restriction]})"
+      age_restriction = if product.age_restriction.present? && product.age_restriction != 'none'
+                          "(#{Product::AGE_RESTRICTIONS[product.age_restriction]})"
+                        end
+      brand_name = product.brand.name if product.brand.present?
+      name = [age_restriction, brand_name, product.name].reject(&:nil?).join(' ')
+      if name.length <= 70
+        name
+      else
+        [age_restriction, product.name].reject(&:nil?).join(' ')
       end
-      model << product.brand.name if product.brand.present?
-      model << product.name
-      model.join(' ')
     end
 
     def gender(product)
