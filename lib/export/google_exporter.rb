@@ -94,15 +94,23 @@ module Export
                     else
                       product.product_properties.map { |p| "#{p.property.name} #{p.value}" }.join(', ')
                     end
-      (description.to_s.length > 0) ? description : model_name(product)
+      if description.to_s.length > 0
+        if product.brand.present?
+          brand_name = product.brand.alt_name.present? ? "#{product.brand.name} (#{product.brand.alt_name})" : product.brand.name
+          description = "#{brand_name}\r\n" + description
+        end
+        description
+      else
+        model_name(product)
+      end
     end
 
     def model_name(product)
       age_restriction = if product.age_restriction.present? && product.age_restriction != 'none'
                           "(#{Product::AGE_RESTRICTIONS[product.age_restriction]})"
                         end
-      brand_name = product.brand.name if product.brand.present?
-      name = [age_restriction, brand_name, product.name].reject(&:nil?).join(' ')
+      @brand_name = product.brand.name if product.brand.present?
+      name = [age_restriction, @brand_name, product.name].reject(&:nil?).join(' ')
       if name.length <= 70
         name
       else
