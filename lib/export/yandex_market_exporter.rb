@@ -207,10 +207,10 @@ module Export
 
     def model_name(product, variant)
       model = []
-      if add_alt_vendor_to_model_name? && product.brand && product.brand.alt_displayed_name.present?
-        model << "(#{product.brand.alt_displayed_name})"
+      model << product.name_with_brand
+      if add_alt_vendor_to_model_name? && product.brand && product.brand.alt_name.present?
+        model << "(#{product.brand.alt_name})"
       end
-      model << product.name
       if @config.present?
         if @config.preferred_extra_model == "sizes"
           variant.option_values.each do |ov|
@@ -218,8 +218,8 @@ module Export
               model << "[%s]" % ov.presentation
             end
           end
-        else
-          model << "(#{I18n.t("for_#{GENDER[product.try(@config.preferred_extra_model)].to_s}")})" if product.try(@config.preferred_extra_model).present?
+        # else
+        #   model << "(#{I18n.t("for_#{GENDER[product.try(@config.preferred_extra_model)].to_s}")})" if product.try(@config.preferred_extra_model).present?
         end
       end
 
