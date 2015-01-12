@@ -31,14 +31,14 @@ module Export
         raise "Preferred category <#{@preferred_category.name}> not included to export"
       end
 
-      @categories = @preferred_category.descendants.where(:export_to_yandex_market => true)
+      @categories = @preferred_category.descendants.where(export_to_yandex_market: true)
 
       @categories_ids = @categories.collect { |x| x.id }
 
-      Nokogiri::XML::Builder.new(:encoding => 'utf-8') do |xml|
+      Nokogiri::XML::Builder.new(encoding: 'utf-8') do |xml|
         xml.doc.create_internal_subset('yml_catalog', nil, 'shops.dtd')
 
-        xml.yml_catalog({:date => Time.now.to_s(:ym)}.merge(namespaces)) {
+        xml.yml_catalog({ date: Time.now.to_s(:ym) }.merge(namespaces)) {
           xml.shop { # описание магазина
                      xml.name    @config.preferred_short_name
                      xml.company @config.preferred_full_name
@@ -88,7 +88,9 @@ module Export
       variants.each do |variant|
         next unless variant.export_to_yandex_market?
 
-        opt = {type: 'vendor.model', available: true}
+        available = virtual_available_for_delivery ? !variant.virtual_availability : true
+
+        opt = {type: 'vendor.model', available: available}
 
         opt[:id] = variant.id
         opt[:group_id] = product.id if count > 1
@@ -256,6 +258,10 @@ module Export
 
     def namespaces
       {}
+    end
+
+    def virtual_available_for_delivery
+      @virtual_available_for_delivery ||= @config.preferred_virtual_available_for_delivery
     end
 
   end

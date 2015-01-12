@@ -25,6 +25,10 @@
     <td colspan=2><%= t("yandex_market_wares_#{@config.preferred_wares}") %></td>
   </tr>
   <tr>
+    <th scope="row"><%= t 'configure_yandex_market.virtual_available_for_delivery' %>:</th>
+    <td colspan=2><%= @config.preferred_virtual_available_for_delivery ? 'Да' : 'Нет' %></td>
+  </tr>
+  <tr>
     <th scope="row"><%= t 'configure_yandex_market.export_file' %>:</th> 
     <td>
       <%= link_to(url_for("http://#{@config.preferred_url.sub(%r[^http://],'').sub(%r[/$],'')}/#{'/yandex_market/yandex_market.xml'.sub(%r[^/],'')}"),  url_for("/yandex_market/yandex_market.xml")) if @config.preferred_url %>
@@ -48,4 +52,4 @@
 
   </tr>
 </table>
-
+<p><%= link_to_with_icon 'edit', t(:edit), edit_admin_yandex_market_settings_path %></p>

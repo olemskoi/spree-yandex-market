@@ -1,0 +1,16 @@
+= render partial: 'admin/yandex_market_settings/shared/configuration_menu'
+
+%h1= t('configure_yandex_market.title')
+= form_for @config, url: admin_yandex_market_settings_path do |form|
+  %fieldset#preferences
+    - @preferences.each do |key|
+    - type = @config.preference_definitions[key].instance_eval{@type}.to_sym
+    - field = "preferred_#{key}"
+      = form.field_container field do
+        = form.label(field, t("configure_yandex_market.#{key}") + ': ') + tag(:br) if type != :boolean
+        = preference_field(form, field, :type => type)
+        = form.label(field, t("configure_yandex_market.#{key}")) if type == :boolean
+  %p.form-buttons
+    = button t(:update)
+    = t(:or)
+    = link_to t(:cancel), admin_yandex_market_settings_path

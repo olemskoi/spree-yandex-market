@@ -12,7 +12,8 @@ class YandexMarketConfiguration < Configuration
   preference :extra_model,     :string, :default => "gender"
   preference :local_delivery_cost, :float # стоимость доставки по своему региону
 
-  
+  preference :virtual_available_for_delivery, :boolean, default: false
+
   # wares property 
   preference :type_prefix,     :string, :default => "prefix"   # Группа товаров \ категория
   preference :vendor,          :string, :default => "vendor"        # Производитель

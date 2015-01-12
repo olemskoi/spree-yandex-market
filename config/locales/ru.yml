@@ -14,6 +14,7 @@ ru:
     what_wares_export: Какой товар выгружать в Яндекс.Маркет
     all_active_wares: Весь активный товар 
     on_hand_wares: Только товар который есть в наличии
+    virtual_available_for_delivery: Виртуальный товар помечать как доступный под заказ
     run_generate_file: Запустить формирование файла
     download: Скачать
     name: Наименование

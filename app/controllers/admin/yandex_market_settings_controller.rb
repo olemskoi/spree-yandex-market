@@ -35,16 +35,16 @@ class Admin::YandexMarketSettingsController < Admin::BaseController
     flash[:notice] = "Обновите страницу через несколько минут."
     redirect_to export_files_admin_yandex_market_settings_url
   end
-  
+
+  def edit
+    @preferences =
+        %w(short_name full_name url category currency virtual_available_for_delivery)
+  end
+
   def update
-    @config.attributes = params[:preferences]
-    @config.save!
-    
-    respond_to do |format|
-      format.html {
-        redirect_to admin_yandex_market_settings_path
-      }
-    end
+    @config.update_attributes(params[@config.class.name.underscore])
+    Rails.cache.delete("configuration_#{@config.class.name}".to_sym)
+    redirect_to admin_yandex_market_settings_path
   end
 
   private
