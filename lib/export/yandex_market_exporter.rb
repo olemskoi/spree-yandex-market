@@ -31,7 +31,8 @@ module Export
         raise "Preferred category <#{@preferred_category.name}> not included to export"
       end
 
-      @categories = @preferred_category.descendants.where(export_to_yandex_market: true)
+      @categories = @preferred_category.descendants.where(export_to_yandex_market: true).
+                                                                        joins(:yandex_market_products).uniq
 
       @categories_ids = @categories.collect { |x| x.id }
 
