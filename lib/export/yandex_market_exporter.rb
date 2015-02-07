@@ -34,6 +34,8 @@ module Export
       @categories = @preferred_category.descendants.where(export_to_yandex_market: true).
                                                                         joins(:yandex_market_products).uniq
 
+      @categories = @categories.map(&:self_and_ancestors).flatten.uniq
+
       @categories_ids = @categories.collect { |x| x.id }
 
       Nokogiri::XML::Builder.new(encoding: 'utf-8') do |xml|
