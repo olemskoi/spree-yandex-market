@@ -31,15 +31,11 @@ module Export
         raise "Preferred category <#{@preferred_category.name}> not included to export"
       end
 
-      market_categories_with_products = @preferred_category.descendants.
-                                                            where(export_to_yandex_market: true).
-                                                            joins(:yandex_market_products).uniq
+      market_categories_with_products = @preferred_category.descendants.where(export_to_yandex_market: true).joins(:yandex_market_products).uniq
 
       market_categories_with_parents = market_categories_with_products.map(&:self_and_ancestors).flatten.uniq
 
-      categories_with_market_categories = Taxonomy.catalog.root.descendants.
-                                                                joins(:yandex_market_category).uniq.
-                                                                map(&:yandex_market_category).uniq
+      categories_with_market_categories = Taxonomy.catalog.root.descendants.joins(:yandex_market_category).uniq.map(&:yandex_market_category).uniq
 
       @categories = (market_categories_with_parents + categories_with_market_categories).uniq
 
@@ -56,16 +52,16 @@ module Export
 
             xml.currencies {# описание используемых валют в магазине
               @currencies && @currencies.each do |curr|
-                opt = {:id => curr.first, :rate => curr[1]}
-                opt.merge!({:plus => curr[2]}) if curr[2] && ["CBRF", "NBU", "NBK", "CB"].include?(curr[1])
+                opt = {id: curr.first, rate: curr[1]}
+                opt.merge!({plus: curr[2]}) if curr[2] && ["CBRF", "NBU", "NBK", "CB"].include?(curr[1])
                 xml.currency(opt)
               end
             }
 
             xml.categories {# категории товара
               @categories_ids && @categories.each do |cat|
-                @cat_opt = {:id => cat.id}
-                @cat_opt.merge!({:parentId => cat.parent_id}) if cat.level > 1 && cat.parent_id.present?
+                @cat_opt = {id: cat.id}
+                @cat_opt.merge!({parentId: cat.parent_id}) if cat.level > 1 && cat.parent_id.present?
                 xml.category(@cat_opt) { xml << cat.name }
               end
             }
@@ -83,7 +79,8 @@ module Export
     protected
 
     def offer_vendor_model(xml, product)
-      return unless product.brand.present? # 'vendor' element is required
+      brand = product.brand
+      return unless brand.present? # 'vendor' element is required
 
       variants = product.variants.select { |v| v.count_on_hand > 0 }
       count = variants.length
@@ -126,10 +123,10 @@ module Export
               xml.picture image_url(image)
             end
             xml.delivery true
-            xml.vendor product.brand.name
+            xml.vendor brand.name
             xml.vendorCode product.sku
-            if add_alt_vendor? && product.brand && product.brand.alt_displayed_name.present?
-              xml.vendorAlt product.brand.alt_displayed_name
+            if add_alt_vendor? && brand && brand.alt_displayed_name.present?
+              xml.vendorAlt brand.alt_displayed_name
             end
             xml.model model
             xml.description product_description(product) if product_description(product)
@@ -140,13 +137,13 @@ module Export
               unless ov.presentation == 'Без размера'
                 unit = product.size_table ? product.size_table.standarted_size_table : 'BRAND'
                 size_value = ov.yml_presentation.present? ? ov.yml_presentation : ov.presentation
-                xml.param size_value, :name => ov.option_type.presentation, :unit => unit
+                xml.param size_value, name: ov.option_type.presentation, unit: unit
               end
             end
-            xml.param product.colour, :name => 'Цвет'
-            xml.param gender, :name => 'Пол' if gender.present?
-            xml.param product.localized_age, :name => 'Возраст' if product.age
-            xml.param product.picture_type, :name => 'Тип рисунка' if product.picture_type
+            xml.param product.colour, name: 'Цвет'
+            xml.param gender, name: 'Пол' if gender.present?
+            xml.param product.localized_age, name: 'Возраст' if product.age
+            xml.param product.picture_type, name: 'Тип рисунка' if product.picture_type
             xml.param series(product), name: 'Линейка' if series(product).present?
             xml.param age_from(variant), name: 'Возраст от', unit: 'месяцев' if age_from(variant).present?
             xml.param age_to(variant), name: 'Возраст до', unit: 'месяцев' if age_to(variant).present?
@@ -179,7 +176,7 @@ module Export
     end
 
     def image_url(image, wowm = false)
-      "#{asset_host(image.to_s)}#{image.attachment.url((wowm == true ? :large_wowm : :large), false)}"
+      "#{asset_host(image.to_s)}#{image.attachment.url((wowm ? :large_wowm : :large), false)}"
     end
 
     def asset_host(source)
@@ -217,7 +214,7 @@ module Export
     end
 
     def products
-      products = Product.not_gifts.master_price_gte(0.001)
+      products = Product.not_gifts.master_price_gte(0.001).includes(:variants_including_master, :yandex_market_category, taxons: :yandex_market_category)
       products.uniq.select do |p|
         p.has_stock? && p.export_to_yandex_market && p.yandex_market_category_including_catalog &&
             p.yandex_market_category_including_catalog.export_to_yandex_market
