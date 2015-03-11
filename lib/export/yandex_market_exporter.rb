@@ -81,6 +81,7 @@ module Export
     def offer_vendor_model(xml, product)
       brand = product.brand
       return unless brand.present? # 'vendor' element is required
+      return if product.bulky? # не выгружаем крупногабаритные товары
 
       variants = product.variants.select { |v| v.count_on_hand > 0 }
       count = variants.length
