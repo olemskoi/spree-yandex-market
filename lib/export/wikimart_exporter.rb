@@ -35,7 +35,7 @@ module Export
           xml.categoryId product_category_id(product)
           xml.market_category market_category(product)
           images.each do |image|
-            xml.picture image_url(image)
+            xml.picture image_url(image, true)
           end
           xml.delivery true
           xml.vendor product.brand.name if product.brand
