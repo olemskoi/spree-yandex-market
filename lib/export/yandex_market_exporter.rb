@@ -9,8 +9,6 @@ module Export
 
     attr_accessor :host, :currencies
 
-    MIN_ORDER_AMOUNT = 500
-
     def initialize
       @utms = '?utm_source=yandex&utm_medium=market&utm_campaign=market'
     end
@@ -131,7 +129,7 @@ module Export
             end
             xml.model model
             xml.description product_description(product) if product_description(product)
-            xml.sales_notes "Минимальная сумма заказа - #{MIN_ORDER_AMOUNT} руб."
+            xml.sales_notes "Минимальная сумма заказа - #{Spree::Config.get(:min_pickup_price)} руб."
             xml.country_of_origin product.country.name if product.country
             xml.barcode variant.barcode if variant.barcode.present?
             variant.option_values.each do |ov|
