@@ -8,6 +8,7 @@ ru:
     currency: Валюта
     export_category: Категория выгрузки
     list_currency: Список валют
+    min_product_price: Минимальная цена товара для выгрузки в Яндекс.Маркет и Google Merchants
     export_wares: Отбор товара
     export_files: Сформированные файлы
     export_file: Ссылка на файл

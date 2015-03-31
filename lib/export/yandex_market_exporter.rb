@@ -214,7 +214,10 @@ module Export
     end
 
     def products
-      products = Product.not_gifts.master_price_gte(0.001).includes(:variants_including_master, :yandex_market_category, taxons: :yandex_market_category)
+      min_product_price = @config.preferred_min_product_price
+      products = Product.not_gifts.
+          includes(:variants_including_master, :yandex_market_category, taxons: :yandex_market_category).
+          joins(:variants).where('variants.price >= ?', min_product_price)
       products.uniq.select do |p|
         p.has_stock? && p.export_to_yandex_market && p.yandex_market_category_including_catalog &&
             p.yandex_market_category_including_catalog.export_to_yandex_market
