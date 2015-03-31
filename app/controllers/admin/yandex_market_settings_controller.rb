@@ -38,7 +38,7 @@ class Admin::YandexMarketSettingsController < Admin::BaseController
 
   def edit
     @preferences =
-        %w(short_name full_name url category currency virtual_available_for_delivery)
+        %w(short_name full_name url category currency virtual_available_for_delivery min_product_price)
   end
 
   def update
