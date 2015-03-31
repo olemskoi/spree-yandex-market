@@ -9,7 +9,7 @@ module Export
     protected
 
     def offer_vendor_model(xml, product)
-      variants = product.variants.select { |v| v.count_on_hand > 0 && v.price > Spree::Config.get(:min_pickup_price) }
+      variants = product.variants.select { |v| v.count_on_hand > 0 && v.price > APP_CONFIG['min_pickup_price'] }
       count = variants.length
       images = product.images.limit(10)
 

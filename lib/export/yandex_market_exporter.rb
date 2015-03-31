@@ -130,7 +130,7 @@ module Export
             end
             xml.model model
             xml.description product_description(product) if product_description(product)
-            xml.sales_notes "Минимальная сумма заказа - #{Spree::Config.get(:min_pickup_price)} руб."
+            xml.sales_notes "Минимальная сумма заказа - #{APP_CONFIG['min_pickup_price']} руб."
             xml.country_of_origin product.country.name if product.country
             xml.barcode variant.barcode if variant.barcode.present?
             variant.option_values.each do |ov|
