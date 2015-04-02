@@ -8,19 +8,19 @@ module Export
     end
 
     def export
-      config = Spree::YandexMarket::Config.instance
+      @config = Spree::YandexMarket::Config.instance
 
-      @host = config.preferred_url.sub(%r[^http://],'').sub(%r[/$], '')
+      @host = @config.preferred_url.sub(%r[^http://],'').sub(%r[/$], '')
 
-      preferred_category = Taxon.find_by_name(config.preferred_category)
+      preferred_category = Taxon.find_by_name(@config.preferred_category)
       categories = preferred_category.self_and_descendants.where(export_to_yandex_market: true)
 
       Nokogiri::XML::Builder.new(encoding: 'utf-8') do |xml|
         xml.doc.create_internal_subset('yml_catalog', nil, 'shops.dtd')
         xml.yml_catalog(date: Time.now.to_s(:ym)) do
           xml.shop do
-            xml.title config.preferred_short_name
-            xml.company config.preferred_full_name
+            xml.title @config.preferred_short_name
+            xml.company @config.preferred_full_name
             xml.url path_to_url('')
 
             xml.currencies do

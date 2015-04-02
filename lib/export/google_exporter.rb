@@ -10,14 +10,14 @@ module Export
     end
 
     def export
-      config = Spree::YandexMarket::Config.instance
-      @host = config.preferred_url.sub(%r[^http://],'').sub(%r[/$], '')
-      Nokogiri::XML::Builder.new(:encoding => 'utf-8') do |xml|
+      @config = Spree::YandexMarket::Config.instance
+      @host = @config.preferred_url.sub(%r[^http://],'').sub(%r[/$], '')
+      Nokogiri::XML::Builder.new(encoding: 'utf-8') do |xml|
         xml.rss({ version: '2.0' }.merge(namespaces)) do
           xml.channel do
-            xml.title config.preferred_short_name
+            xml.title @config.preferred_short_name
             xml.link path_to_url('')
-            xml.description config.preferred_full_name
+            xml.description @config.preferred_full_name
             products.each do |product|
               offer_vendor_model(xml, product)
             end
