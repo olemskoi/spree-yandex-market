@@ -6,7 +6,7 @@ module Export
 
     def initialize
     end
-    
+
     protected
 
     def preferred_category
@@ -16,7 +16,7 @@ module Export
     def product_category_id(product)
       product.cat.id
     end
-    
+
     def offer_vendor_model(xml, product)
       variant = product.first_variant
       images = product.images.limit(10)
@@ -32,12 +32,6 @@ module Export
         xml.vendor product.brand.name if product.brand
         xml.model model
       end
-    end
-
-    def products
-      products = Product.active.not_gifts.master_price_gte(0.001)
-      products.uniq.select{ |p| p.export_to_yandex_market && p.yandex_market_category_including_catalog &&
-          p.yandex_market_category_including_catalog.export_to_yandex_market }
     end
 
     def minimal_price(product)

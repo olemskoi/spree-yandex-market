@@ -9,22 +9,5 @@ module Export
     def product_price(product)
       product.variants_including_master.where('price > 1.0').map(&:price).min
     end
-
-    def products
-      products = Product.active.not_gifts.master_price_gte(0.001)
-      products.uniq.select{ |p| p.export_to_yandex_market && p.yandex_market_category_including_catalog &&
-          p.yandex_market_category_including_catalog.export_to_yandex_market }
-    end
-
-    # def model_name(product)
-    #   model = []
-    #   model << product.brand.name if product.brand
-    #   if product.brand && product.brand.alt_displayed_name.present?
-    #     model << "(#{product.brand.alt_displayed_name})"
-    #   end
-    #   model << product.name
-    #   model.join(' ')
-    # end
-
   end
 end

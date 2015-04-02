@@ -45,7 +45,7 @@ module Export
         end
       end.to_xml
     end
-    
+
     protected
 
     def offer_vendor_model(xml, product)
@@ -90,7 +90,10 @@ module Export
     # end
 
     def old_price_products(cut_price)
-      products = Product.active.not_gifts.master_price_gte(0.001)
+      min_product_price = @config.preferred_min_product_price
+      products = Product.not_gifts.
+          includes(:variants_including_master, :yandex_market_category, taxons: :yandex_market_category).
+          joins(:variants).where('variants.price >= ?', min_product_price)
       products.uniq.select do |p|
         p.export_to_yandex_market != cut_price &&
             p.variants_including_master.select{ |v| available_variant?(v) }.length > 0
