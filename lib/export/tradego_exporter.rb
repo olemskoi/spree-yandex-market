@@ -90,7 +90,7 @@ module Export
     # end
 
     def old_price_products(cut_price)
-      min_product_price = @config.preferred_min_product_price
+      min_product_price = APP_CONFIG['min_product_price']
       products = Product.not_gifts.
           includes(:variants_including_master, :yandex_market_category, taxons: :yandex_market_category).
           joins(:variants).where('variants.price >= ?', min_product_price)

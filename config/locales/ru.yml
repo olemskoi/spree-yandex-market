@@ -8,12 +8,11 @@ ru:
     currency: Валюта
     export_category: Категория выгрузки
     list_currency: Список валют
-    min_product_price: Минимальная цена товара для выгрузки в Яндекс.Маркет и Google Merchants
     export_wares: Отбор товара
     export_files: Сформированные файлы
     export_file: Ссылка на файл
     what_wares_export: Какой товар выгружать в Яндекс.Маркет
-    all_active_wares: Весь активный товар 
+    all_active_wares: Весь активный товар
     on_hand_wares: Только товар который есть в наличии
     virtual_available_for_delivery: Виртуальный товар помечать как доступный под заказ
     run_generate_file: Запустить формирование файла
@@ -50,9 +49,9 @@ ru:
     performed_by: Исполнитель для аудиокниги
     storage: Носитель аудиокниги
     format: Формат аудиокниги
-    recording_length: Время звучания 
+    recording_length: Время звучания
     artist:  Исполнитель
-    title: Наименование 
+    title: Наименование
     music_video_year: Год
     media: Носитель
     starring: Актеры

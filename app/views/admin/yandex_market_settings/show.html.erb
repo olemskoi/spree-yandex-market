@@ -29,10 +29,6 @@
     <td colspan=2><%= @config.preferred_virtual_available_for_delivery ? 'Да' : 'Нет' %></td>
   </tr>
   <tr>
-    <th scope="row"><%= t 'configure_yandex_market.min_product_price' %>:</th>
-    <td colspan=2><%= @config.preferred_min_product_price %></td>
-  </tr>
-  <tr>
     <th scope="row"><%= t 'configure_yandex_market.export_file' %>:</th>
     <td>
       <%= link_to(url_for("http://#{@config.preferred_url.sub(%r[^http://],'').sub(%r[/$],'')}/#{'/yandex_market/yandex_market.xml'.sub(%r[^/],'')}"),  url_for("/yandex_market/yandex_market.xml")) if @config.preferred_url %>

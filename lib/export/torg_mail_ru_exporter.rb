@@ -24,7 +24,7 @@ module Export
       @categories = @categories.self_and_descendants
       @categories_ids = @categories.collect { |x| x.id }
 
-      min_product_price = @config.preferred_min_product_price
+      min_product_price = APP_CONFIG['min_product_price']
 
       Nokogiri::XML::Builder.new({ encoding: "utf-8"}, SCHEME) do |xml|
         xml.torg_price(date: Time.now.to_s(:ym)) {

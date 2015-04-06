@@ -14,8 +14,6 @@ class YandexMarketConfiguration < Configuration
 
   preference :virtual_available_for_delivery, :boolean, default: false
 
-  preference :min_product_price, :integer, default: 900
-
   # wares property
   preference :type_prefix,     :string, default: "prefix"        # Группа товаров \ категория
   preference :vendor,          :string, default: "vendor"        # Производитель
