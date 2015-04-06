@@ -220,7 +220,8 @@ module Export
           joins(:variants).where('variants.price >= ?', min_product_price)
       products.uniq.select do |p|
         p.has_stock? && p.export_to_yandex_market && p.yandex_market_category_including_catalog &&
-            p.yandex_market_category_including_catalog.export_to_yandex_market
+            p.yandex_market_category_including_catalog.export_to_yandex_market &&
+            (p.cat.present? ? p.cat.export_to_yandex_market : true)
       end
     end
 
