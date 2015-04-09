@@ -180,7 +180,8 @@ module Export
     end
 
     def asset_host(source)
-      "http://assets0#{(1 + source.hash % 5).to_s + '.' + @host}"
+      # "http://assets0#{(1 + source.hash % 5).to_s + '.' + @host}"
+      "http://#{@host}"
     end
 
     def preferred_category
