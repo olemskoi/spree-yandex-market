@@ -1,22 +1,22 @@
 # -*- coding: utf-8 -*-
-class Admin::YandexMarketSettingsController < Admin::BaseController  
+class Admin::YandexMarketSettingsController < Admin::BaseController
   before_filter :get_config
-  
+
   def show
     @taxons =  Taxon.roots
   end
-  
+
   def general
     @taxons =  Taxon.roots
   end
-  
+
   def currency
   end
-  
+
   def ware_property
     @properties = Property.all
   end
-  
+
   def export_files
     directory = File.join(Rails.root, 'public', 'yandex_market', '**', '*')
     # нельзя вызывать стат, не удостоверившись в наличии файла!!111
@@ -26,7 +26,7 @@ class Admin::YandexMarketSettingsController < Admin::BaseController
     @export_files.reject! {|x| x.first == "yandex_market.xml" }
     @export_files.unshift(e) unless e.blank?
   end
-  
+
   def run_export
     command = %{cd #{Rails.root} && RAILS_ENV=#{Rails.env} rake spree_yandex_market:generate_ym &}
     logger.info "[ yandex market ] Запуск формирование файла экспорта из блока администрирования "
@@ -38,7 +38,7 @@ class Admin::YandexMarketSettingsController < Admin::BaseController
 
   def edit
     @preferences =
-        %w(short_name full_name url category currency virtual_available_for_delivery min_product_price)
+        %w(short_name full_name url category currency virtual_available_for_delivery)
   end
 
   def update
