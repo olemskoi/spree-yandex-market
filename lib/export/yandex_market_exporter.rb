@@ -215,16 +215,61 @@ module Export
     end
 
     def products
-      min_product_price = APP_CONFIG['min_product_price']
-      products = Product.not_gifts.includes(:yandex_market_category, taxons: :yandex_market_category).
-          joins(:variants_including_master).
-          where('variants.price >= ? and variants.count_on_hand > 0 and variants.export_to_yandex_market = ?',
-                min_product_price, true)
-      products.uniq.select do |p|
-        (p.cat.present? ? p.cat.export_to_yandex_market : true) && p.yandex_market_category_including_catalog &&
-            p.yandex_market_category_including_catalog.export_to_yandex_market
+      # Много написано, зато выполянется за несколько секунд, в отличии от минуты до этого
+      # Что делается в этом куске кода?
+      # Нам нужно получить список товаров годных к выгрузке
+      # Для этого должны быть выполнены следующие условия
 
-      end
+      # Первым делом выбираем товары не являющиеся подарком, с ценой не менее минимальной,
+      # в наличии и с вариантами отмеченными для экспорта
+
+      min_product_price = APP_CONFIG['min_product_price']
+      product_ids = Product.not_gifts.joins(:variants_including_master).
+          where('variants.price >= ? and variants.count_on_hand > 0 and variants.export_to_yandex_market = ?',
+                min_product_price, true).uniq.pluck(:id)
+
+      # В категории товара должно стоять export_to_yandex_market = true
+      # если у товара нет категории, то это условие пропускается
+
+      product_with_cat_ids = Product.joins(:taxons).where(id: product_ids).
+          where('taxons.permalink like ?', 'cat/%').uniq.pluck(:id)
+
+      product_without_cat_ids = product_ids - product_with_cat_ids
+
+      # т.к. у товара может быть несколько категорий, мы его исключим из списка,
+      # даже если у одной из категорий отменён экспорт на Яндекс.Маркет
+      product_with_cat_for_yandex_ids = Product.joins(:taxons).where(id: product_ids).
+          where('taxons.export_to_yandex_market = ? and taxons.permalink like ?', true, 'cat/%').
+          uniq.pluck(:id) - Product.joins(:taxons).where(id: product_ids).
+              where('taxons.export_to_yandex_market = ? and taxons.permalink like ?', false, 'cat/%').uniq.pluck(:id)
+
+      # также у товара либо его категории дожна быть установлена категория Янедкса,
+      # у этой категории также должен быть включёт экспорт на яндекс
+
+      yandex_categories_ids = Taxonomy.yandex_market.root.descendants.
+                                       where(export_to_yandex_market: true).pluck(:id)
+
+      products_with_ym_category_ids = Product.where(id: product_ids,
+                                                    yandex_market_category_id: yandex_categories_ids).pluck(:id)
+
+      product_with_cat_with_ymc_ids = Product.joins(:taxons).where('taxons.permalink like ?', 'cat/%').
+                                where(taxons: {yandex_market_category_id: yandex_categories_ids}).uniq.pluck(:id)
+
+      # из выборки исключаем товары отмечены как неимпортируемы на Яндекс
+
+      product_not_for_yandex_ids = Product.where(export_to_yandex_market: false).pluck(:id)
+
+      # наличие бренда у товара обязательно
+      products_with_brand_ids = Product.joins(:taxons).where(id: product_ids).
+          where('taxons.permalink like ?', 'brand/%').uniq.pluck(:id)
+
+      filtered_product_ids = products_with_brand_ids &
+          ((product_with_cat_for_yandex_ids + product_without_cat_ids) &
+           (products_with_ym_category_ids + product_with_cat_with_ymc_ids) - product_not_for_yandex_ids)
+
+      Product.where(id: filtered_product_ids).includes(:images, :taxons, :country, :size_table, :yandex_market_category,
+                                                       :orthopedic_properties, product_properties: :property,
+                                                       variants_including_master: [option_values: :option_type])
     end
 
     def model_name(product, variant)
