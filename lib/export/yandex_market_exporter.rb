@@ -216,13 +216,14 @@ module Export
 
     def products
       min_product_price = APP_CONFIG['min_product_price']
-      products = Product.not_gifts.
-          includes(:variants_including_master, :yandex_market_category, taxons: :yandex_market_category).
-          joins(:variants).where('variants.price >= ?', min_product_price)
+      products = Product.not_gifts.includes(:yandex_market_category, taxons: :yandex_market_category).
+          joins(:variants_including_master).
+          where('variants.price >= ? and variants.count_on_hand > 0 and variants.export_to_yandex_market = ?',
+                min_product_price, true)
       products.uniq.select do |p|
-        p.has_stock? && p.export_to_yandex_market && p.yandex_market_category_including_catalog &&
-            p.yandex_market_category_including_catalog.export_to_yandex_market &&
-            (p.cat.present? ? p.cat.export_to_yandex_market : true)
+        (p.cat.present? ? p.cat.export_to_yandex_market : true) && p.yandex_market_category_including_catalog &&
+            p.yandex_market_category_including_catalog.export_to_yandex_market
+
       end
     end
 
