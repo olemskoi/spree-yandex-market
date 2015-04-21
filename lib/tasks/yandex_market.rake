@@ -19,8 +19,9 @@ namespace :spree_yandex_market do
     generate_export_file
   end
 
-  %w(activizm alytics alytics_category torg_mail_ru olx kupitigra wikimart mail_ru lookmart retail_rocket google
-    price_ru mixmarket tradego trusted_service market_ru admitad criteo segmento berito nadavi).each do |export_name|
+  %w(activizm alytics alytics_category torg_mail_ru olx kupitigra wikimart mail_ru lookmart
+    retail_rocket google price_ru mixmarket tradego trusted_service market_ru admitad criteo
+    segmento berito nadavi technoportal).each do |export_name|
     desc "Generate #{export_name.titleize} export file"
     task "generate_#{export_name}" => :environment do
       generate_export_file export_name
@@ -35,7 +36,7 @@ namespace :spree_yandex_market do
     mkdir_p directory unless File.exist?(directory)
 
     ::Time::DATE_FORMATS[:ym] = "%Y-%m-%d %H:%M"
-    
+
     yml_xml = Export.const_get("#{ts.camelize}Exporter").new.export
 
     verbose = Rake.verbose
