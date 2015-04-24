@@ -19,7 +19,7 @@ module Export
 
     def export
       @config = Spree::YandexMarket::Config.instance
-      @host = @config.preferred_url.sub(%r[^http://], '').sub(%r[/$], '')
+      @host = @config.preferred_url.sub(%r[^https?://], '').sub(%r[/$], '')
 
       @currencies = @config.preferred_currency.split(';').map { |x| x.split(':') }
       @currencies.first[1] = 1
@@ -110,7 +110,7 @@ module Export
         price = variant.price
         if price.to_i > 1
           xml.offer(opt) do
-            xml.url "http://#{@host}/id/#{product.id}#{@utms}"
+            xml.url "https://#{@host}/id/#{product.id}#{@utms}"
             xml.price price
             old_price = variant.old_price
             if old_price.to_i > 0 and price / old_price <= 0.95
@@ -172,7 +172,7 @@ module Export
     end
 
     def path_to_url(path)
-      "http://#{@host.sub(%r[^http://], '')}/#{path.sub(%r[^/], '')}"
+      "https://#{@host.sub(%r[^https?://], '')}/#{path.sub(%r[^/], '')}"
     end
 
     def image_url(image, wowm = false)
@@ -181,7 +181,7 @@ module Export
 
     def asset_host(source)
       # "http://assets0#{(1 + source.hash % 5).to_s + '.' + @host}"
-      "http://#{@host}"
+      "https://#{@host}"
     end
 
     def preferred_category
