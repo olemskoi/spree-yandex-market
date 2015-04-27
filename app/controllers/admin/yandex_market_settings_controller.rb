@@ -4,6 +4,11 @@ class Admin::YandexMarketSettingsController < Admin::BaseController
 
   def show
     @taxons =  Taxon.roots
+    @host = if @config.preferred_url.match(%r[^https?://])
+              @config.preferred_url
+            else
+              "http://#{@config.preferred_url}"
+            end
   end
 
   def general
