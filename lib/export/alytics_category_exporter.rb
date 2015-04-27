@@ -8,7 +8,11 @@ module Export
 
     def export
       @config = Spree::YandexMarket::Config.instance
-      @host = @config.preferred_url.sub(%r[^http://],'').sub(%r[/$], '')
+      @host = if @config.preferred_url.match(%r[^https?://])
+                @config.preferred_url
+              else
+                "http://#{@config.preferred_url}"
+              end
 
       @currencies = @config.preferred_currency.split(';').map{ |x| x.split(':') }
       @currencies.first[1] = 1
@@ -96,7 +100,7 @@ module Export
 
       # category_names.each do |category_name|
         xml.offer(available: products.on_hand_variants.present?, id: category.id, type: 'vendor.model') do
-          xml.url "http://#{@host}/#{category.permalink}#{@utms}"
+          xml.url "#{@host}/#{category.permalink}#{@utms}"
 
           xml.price max_price
           xml.currencyId 'RUR'

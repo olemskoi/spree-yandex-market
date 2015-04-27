@@ -21,7 +21,7 @@ module Export
       opt = { id: product.id, type: 'vendor.model', available: true }
       model = model_name(product, variant)
       xml.offer(opt) do
-        xml.url "http://#{@host}/id/#{product.id}#{@utms}"
+        xml.url "#{@host}/id/#{product.id}#{@utms}"
         xml.price variant.price
         xml.old_price variant.old_price if variant.old_price.to_i > 0
         xml.topseller Product.bestsellers(30.days.ago, 100).include?(product)

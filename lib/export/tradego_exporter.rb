@@ -10,7 +10,11 @@ module Export
     def export
       @config = Spree::YandexMarket::Config.instance
 
-      @host = @config.preferred_url.sub(%r[^http://],'').sub(%r[/$], '')
+      @host = if @config.preferred_url.match(%r[^https?://])
+                @config.preferred_url
+              else
+                "http://#{@config.preferred_url}"
+              end
 
       preferred_category = Taxon.find_by_name(@config.preferred_category)
       categories = preferred_category.self_and_descendants.where(export_to_yandex_market: true)
@@ -52,7 +56,7 @@ module Export
       cheapest_variant = product.variants_including_master.select{ |v| available_variant?(v) }.
           sort_by(&:price).first
       xml.offer(id: product.id) do
-        xml.url "http://#{@host}/id/#{product.id}#{utms}"
+        xml.url "#{@host}/id/#{product.id}#{utms}"
         xml.priceOld cheapest_variant.old_price
         xml.price cheapest_variant.price
         xml.currencyId 'RUR'

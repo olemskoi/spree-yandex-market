@@ -22,7 +22,7 @@ module Export
       images = product.images.limit(10)
       model = model_name(product, variant)
       xml.offer(type: 'vendor.model', available: true, id: product.id) do
-        xml.url "http://#{@host}/id/#{product.id}"
+        xml.url "#{@host}/id/#{product.id}"
         xml.price minimal_price(product)
         xml.currencyId currency_id
         xml.categoryId product_category_id(product)

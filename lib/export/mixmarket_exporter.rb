@@ -11,7 +11,7 @@ module Export
       variant = product.first_variant
 
       xml.offer(id: product.id) do
-        xml.url "http://#{@host}/id/#{product.id}#{@utms}"
+        xml.url "#{@host}/id/#{product.id}#{@utms}"
         xml.price product_price(product)
         xml.currencyId currency_id
         xml.categoryId product_category_id(product)

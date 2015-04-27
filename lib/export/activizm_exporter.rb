@@ -10,7 +10,11 @@ module Export
 
     def export
       @config = Spree::YandexMarket::Config.instance
-      @host = @config.preferred_url.sub(%r[^http://],'').sub(%r[/$], '')
+      @host = if @config.preferred_url.match(%r[^https?://])
+                @config.preferred_url
+              else
+                "http://#{@config.preferred_url}"
+              end
 
       @currencies = @config.preferred_currency.split(';').map{ |x| x.split(':') }
       @currencies.first[1] = 1
@@ -84,7 +88,7 @@ module Export
       opt = { id: product.id, available: true, type: 'vendor.model'}
       model = model_name(product, variant)
       xml.offer(opt) do
-        xml.url "http://#{@host}/id/#{product.id}#{@utms}"
+        xml.url "#{@host}/id/#{product.id}#{@utms}"
         xml.price variant.price
         xml.old_price variant.old_price if variant.old_price.to_i > 0
         xml.currencyId currency_id

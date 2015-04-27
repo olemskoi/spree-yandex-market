@@ -11,7 +11,11 @@ module Export
 
     def export
       @config = Spree::YandexMarket::Config.instance
-      @host = @config.preferred_url.sub(%r[^http://],'').sub(%r[/$], '')
+      @host = if @config.preferred_url.match(%r[^https?://])
+                @config.preferred_url
+              else
+                "http://#{@config.preferred_url}"
+              end
       Nokogiri::XML::Builder.new(encoding: 'utf-8') do |xml|
         xml.rss({ version: '2.0' }.merge(namespaces)) do
           xml.channel do
@@ -36,7 +40,7 @@ module Export
         variants.each do |variant|
           xml.item do
             xml.title model_name(product)
-            xml.link "http://#{@host}/id/#{product.id}#{utms}"
+            xml.link "#{@host}/id/#{product.id}#{utms}"
             xml.description product_description(product)
             xml['g'].id variant.id
             xml['g'].condition 'new'

@@ -14,7 +14,11 @@ module Export
     def export
       # @config = ::TorgMailRu.find_or_create_by_name('Default configuration')
       @config = ::YandexMarket.first
-      @host = @config.preferred_url.sub(%r[^http://],'').sub(%r[/$], '')
+      @host = if @config.preferred_url.match(%r[^https?://])
+                @config.preferred_url
+              else
+                "http://#{@config.preferred_url}"
+              end
       ActionController::Base.asset_host = @config.preferred_url
 
       @currencies = @config.preferred_currency.split(';').map{|x| x.split(':')}
@@ -74,7 +78,7 @@ module Export
     # type: event_ticket
 
     def path_to_url(path)
-      "http://#{@host.sub(%r[^http://],'')}/#{path.sub(%r[^/],'')}"
+      "#{@host}/#{path.sub(%r[^/],'')}"
     end
 
     def offer(xml,product, cat)

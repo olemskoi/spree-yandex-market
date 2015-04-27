@@ -29,7 +29,7 @@ module Export
         model = model_name(product, variant)
 
         xml.offer(opt) do
-          xml.url "http://#{@host}/id/#{product.id}#{@utms}"
+          xml.url "#{@host}/id/#{product.id}#{@utms}"
           xml.price variant.price
           xml.currencyId currency_id
           xml.categoryId product_category_id(product)
