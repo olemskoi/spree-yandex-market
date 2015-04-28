@@ -4,7 +4,7 @@ module Export
     protected
 
     def utms
-      '?utm_source=google-remarketing&utm_medium=remarketing&utm_campaign=remarketing'
+      '?utm_source=google-remarketing&utm_medium=google-remarketing&utm_campaign=google-remarketing'
     end
   end
 end
