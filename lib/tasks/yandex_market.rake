@@ -19,9 +19,9 @@ namespace :spree_yandex_market do
     generate_export_file
   end
 
-  %w(activizm alytics alytics_category torg_mail_ru olx kupitigra wikimart mail_ru lookmart
-    retail_rocket google google_remarketing price_ru mixmarket tradego trusted_service market_ru admitad criteo
-    segmento berito nadavi technoportal).each do |export_name|
+  %w(activizm admitad alytics alytics_category aport berito criteo google google_remarketing
+    kupitigra lookmart mail_ru market_ru mixmarket nadavi olx price_ru retail_rocket segmento
+    technoportal torg_mail_ru tradego trusted_service wikimart).each do |export_name|
     desc "Generate #{export_name.titleize} export file"
     task "generate_#{export_name}" => :environment do
       generate_export_file export_name
