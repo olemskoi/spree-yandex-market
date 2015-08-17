@@ -67,7 +67,7 @@ module Export
             }
 
             xml.offers {# список товаров
-              products.each do |product|
+              products.find_each do |product|
                 offer_vendor_model(xml, product)
               end
             }
