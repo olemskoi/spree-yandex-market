@@ -19,7 +19,7 @@ namespace :spree_yandex_market do
     generate_export_file
   end
 
-  %w(activizm admitad alytics alytics_category aport berito criteo google google_remarketing
+  %w(activizm admitad alytics alytics_category aport begemotik berito criteo google google_remarketing
     kupitigra lookmart mail_ru market_ru mixmarket nadavi olx price_ru retail_rocket segmento
     technoportal torg_mail_ru tradego trusted_service wikimart).each do |export_name|
     desc "Generate #{export_name.titleize} export file"
