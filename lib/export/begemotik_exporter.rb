@@ -108,7 +108,7 @@ module Export
         opt = {type: 'vendor.model', available: available}
 
         opt[:id] = variant.id
-        opt[:group_id] = product.id if count > 1
+        opt[:group_id] = product.id
 
         model = model_name(product, variant)
 
