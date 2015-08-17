@@ -87,7 +87,7 @@ module Export
 
       brand = product.brand
 
-      variants = product.variants.select { |v| v.count_on_hand > 0 }
+      variants = product.variants
       count = variants.length
       images = product.images.limit(10)
 
