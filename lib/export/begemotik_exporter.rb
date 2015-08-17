@@ -86,7 +86,7 @@ module Export
 
 
       brand = product.brand
-      next unless brand.present?
+      return unless brand.present?
 
       variants = product.variants
       count = variants.length
