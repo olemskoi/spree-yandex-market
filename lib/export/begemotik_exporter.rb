@@ -184,7 +184,7 @@ module Export
       "#{@host}/#{path.sub(%r[^/], '')}"
     end
 
-    def image_url(image, wowm = false)
+    def image_url(image, wowm = true)
       "#{asset_host(image.to_s)}#{image.attachment.url((wowm ? :large_wowm : :large), false)}"
     end
 
