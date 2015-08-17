@@ -114,9 +114,9 @@ module Export
         price = variant.price
         if price.to_i > 1
           xml.offer(opt) do
-            xml.extern_id = product.extern_id
-            xml.extern_source = product.extern_source
-            xml.extern_url = product.extern_url
+            xml.extern_id product.extern_id if product.extern_id.present?
+            xml.extern_source  product.extern_source if product.extern_source.present?
+            xml.extern_url  product.extern_url if product.extern_url.present?
 
             xml.url "#{@host}/id/#{product.id}#{@utms}"
             xml.price price
