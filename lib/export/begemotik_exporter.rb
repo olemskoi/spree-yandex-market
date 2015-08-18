@@ -115,6 +115,7 @@ module Export
         price = variant.price
         if price.to_i > 1
           xml.offer(opt) do
+            xml.vendor_id product.vendor.code if product.vendor.present?
             xml.extern_id product.extern_id if product.extern_id.present?
             xml.extern_source  product.extern_source if product.extern_source.present?
             xml.extern_url  product.extern_url if product.extern_url.present?
@@ -138,8 +139,8 @@ module Export
               xml.vendorAlt brand.alt_displayed_name
             end
             xml.model model
-            xml.description if product.description.present?
-            xml.short_description if product.short_description.present?
+            xml.description product.description if product.description.present?
+            xml.short_description product.short_description if product.short_description.present?
 
             xml.country_of_origin product.country.name if product.country
             xml.barcode variant.barcode if variant.barcode.present?
