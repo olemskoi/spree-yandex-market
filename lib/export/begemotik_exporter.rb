@@ -113,8 +113,8 @@ module Export
         model = model_name(product, variant)
 
         price = variant.price
-        price = variant.cost_price * 1.5 if price.to_i <= 1
-        if price.to_i > 1
+        price = variant.cost_price.to_i * 1.5 if price.to_i <= 1
+        if true #price.to_i > 1
           xml.offer(opt) do
             xml.vendor_id product.vendor.code if product.vendor.present?
             xml.extern_id product.extern_id if product.extern_id.present?
