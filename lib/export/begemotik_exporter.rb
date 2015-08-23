@@ -113,6 +113,7 @@ module Export
         model = model_name(product, variant)
 
         price = variant.price
+        price = variant.cost_price * 1.3 if price.to_i <= 1
         if price.to_i > 1
           xml.offer(opt) do
             xml.vendor_id product.vendor.code if product.vendor.present?
